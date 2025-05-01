@@ -8,9 +8,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 🔐 Llaves y entorno
 SECRET_KEY = config("SECRET_KEY")
-# DEBUG = config("DEBUG", cast=bool, default=False)
-DEBUG = True
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv(), default="127.0.0.1")
+DEBUG = config("DEBUG", cast=bool, default=False)
+# DEBUG = True
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv(), default="test-4-c47v.onrender.com")
 
 # 🔒 Stripe
 STRIPE_PUBLIC_KEY = config("STRIPE_PUBLIC_KEY")
@@ -99,6 +99,6 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-# CSRF_COOKIE_SECURE = True
-# SESSION_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
