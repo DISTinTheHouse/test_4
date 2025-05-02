@@ -1,0 +1,13 @@
+QResto - Sistema Web para Restaurantes con QR
+
+Copyright (c) 2025
+
+Desarrollado por Jesús Ibarra. Todos los derechos reservados.
+
+Este software está protegido por la Ley Federal del Derecho de Autor en México y tratados internacionales.
+
+Se permite el uso de este código únicamente bajo autorización escrita del autor. No se permite su copia, redistribución, venta ni modificación con fines comerciales sin licencia formal.
+
+El uso no autorizado de este software puede ser considerado como una infracción y sujeto a acciones legales.
+
+Contacto para licenciamiento o uso comercial: [ufkwear@email.com]
