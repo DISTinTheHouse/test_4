@@ -1,13 +1,14 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Mis Restaurantes</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://js.stripe.com/v3/"></script>
-</head>
-<body>
+{% extends 'base.html' %}
+{% load static %}
 
+{% block title %}Mis Restaurantes{% endblock %}
+
+{% block extra_head %}
+<!-- Stripe -->
+<script src="https://js.stripe.com/v3/"></script>
+{% endblock %}
+
+{% block content %}
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>🍽️ Mis Restaurantes</h1>
@@ -82,80 +83,77 @@
             </div>
         </div>
     {% endif %}
-</div>
 
-<!-- Modal para registrar restaurante -->
-{% if perfil.membresia_activa and restaurantes|length < perfil.cantidad_restaurantes %}
-<div class="modal fade" id="modalRestaurante" tabindex="-1" aria-labelledby="modalRestauranteLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <form method="post">
-                {% csrf_token %}
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalRestauranteLabel">Registrar Restaurante</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label>Nombre</label>
-                        <input type="text" name="nombre" class="form-control" required>
+    <!-- Modal para registrar restaurante -->
+    {% if perfil.membresia_activa and restaurantes|length < perfil.cantidad_restaurantes %}
+    <div class="modal fade" id="modalRestaurante" tabindex="-1" aria-labelledby="modalRestauranteLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalRestauranteLabel">Registrar Restaurante</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
-                    <div class="mb-3">
-                        <label>Dirección</label>
-                        <input type="text" name="direccion" class="form-control">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label>Nombre</label>
+                            <input type="text" name="nombre" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label>Dirección</label>
+                            <input type="text" name="direccion" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label>Teléfono</label>
+                            <input type="text" name="telefono" class="form-control">
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label>Teléfono</label>
-                        <input type="text" name="telefono" class="form-control">
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success w-100">Guardar Restaurante</button>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success w-100">Guardar Restaurante</button>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
-</div>
-{% endif %}
+    {% endif %}
 
-<!-- Stripe Elements Script -->
-<script>
-    const stripeRestaurante = Stripe("{{ STRIPE_PUBLIC_KEY }}");
-    const elementsRestaurante = stripeRestaurante.elements();
-    const cardRestaurante = elementsRestaurante.create('card');
-    cardRestaurante.mount('#card-element-restaurante');
+    <!-- Stripe Elements Script -->
+    <script>
+        const stripeRestaurante = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+        const elementsRestaurante = stripeRestaurante.elements();
+        const cardRestaurante = elementsRestaurante.create('card');
+        cardRestaurante.mount('#card-element-restaurante');
 
-    cardRestaurante.on('change', function(event) {
-        const displayError = document.getElementById('card-errors-restaurante');
-        displayError.textContent = event.error ? event.error.message : '';
-    });
+        cardRestaurante.on('change', function(event) {
+            const displayError = document.getElementById('card-errors-restaurante');
+            displayError.textContent = event.error ? event.error.message : '';
+        });
 
-    const formRestaurante = document.getElementById('payment-form-restaurante');
-    formRestaurante.addEventListener('submit', async function(event) {
-        event.preventDefault();
+        const formRestaurante = document.getElementById('payment-form-restaurante');
+        formRestaurante.addEventListener('submit', async function(event) {
+            event.preventDefault();
 
-        const response = await fetch("{% url 'crear_payment_intent_restaurante' %}", {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": "{{ csrf_token }}",
-                "Content-Type": "application/json"
+            const response = await fetch("{% url 'crear_payment_intent_restaurante' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/json"
+                }
+            });
+
+            const { clientSecret } = await response.json();
+
+            const result = await stripeRestaurante.confirmCardPayment(clientSecret, {
+                payment_method: { card: cardRestaurante }
+            });
+
+            if (result.error) {
+                document.getElementById('card-errors-restaurante').textContent = result.error.message;
+            } else if (result.paymentIntent.status === 'succeeded') {
+                window.location.href = "{% url 'mis_restaurantes' %}?extra_pago=exitoso";
             }
         });
-
-        const { clientSecret } = await response.json();
-
-        const result = await stripeRestaurante.confirmCardPayment(clientSecret, {
-            payment_method: { card: cardRestaurante }
-        });
-
-        if (result.error) {
-            document.getElementById('card-errors-restaurante').textContent = result.error.message;
-        } else if (result.paymentIntent.status === 'succeeded') {
-            window.location.href = "{% url 'mis_restaurantes' %}?extra_pago=exitoso";
-        }
-    });
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    </script>
+</div>
+{% endblock %}

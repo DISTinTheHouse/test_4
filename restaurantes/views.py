@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Restaurante
@@ -62,3 +62,7 @@ def crear_payment_intent_restaurante(request):
             return JsonResponse({'clientSecret': intent.client_secret})
         except Exception as e:
             return JsonResponse({'error': str(e)})
+
+def detalle_restaurante(request, slug):
+    restaurante = get_object_or_404(Restaurante, slug=slug)
+    return render(request, 'restaurantes/detalle_restaurante.html', {'restaurante': restaurante})

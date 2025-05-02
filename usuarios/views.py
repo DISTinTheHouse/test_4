@@ -9,11 +9,15 @@ from django.http import JsonResponse
 from datetime import timedelta
 from django.utils import timezone
 from django.conf import settings
+from restaurantes.models import Restaurante
+
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 # index
 def landing(request):
-    return render(request, 'usuarios/landing.html')
+    restaurantes = Restaurante.objects.all()  # o el filtro que uses
+    return render(request, 'usuarios/landing.html', {'restaurantes': restaurantes})
+
 
 # registrarse
 def registro(request):
