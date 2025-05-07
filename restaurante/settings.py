@@ -8,8 +8,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 🔐 Llaves y entorno
 SECRET_KEY = config("SECRET_KEY")
-#DEBUG = config("DEBUG", cast=bool, default=False)
-DEBUG = True
+DEBUG = config("DEBUG", cast=bool, default=False)
+#DEBUG = True
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv(), default="test-4-c47v.onrender.com")
 
 # 🔒 Stripe
