@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .models import PerfilUsuario
 from django.contrib import messages
@@ -18,6 +18,10 @@ def landing(request):
     restaurantes = Restaurante.objects.all()  # o el filtro que uses
     return render(request, 'usuarios/landing.html', {'restaurantes': restaurantes})
 
+def logout_view(request):
+    logout(request)
+    messages.success(request, "Has cerrado sesión correctamente.")
+    return redirect('landing')  
 
 # registrarse
 def registro(request):

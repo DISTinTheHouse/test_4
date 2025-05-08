@@ -9,92 +9,103 @@
 {% block title %}Mi Perfil{% endblock %}
 
 {% block content %}
-
+<!-- Mensajes -->
 {% if messages %}
-<div class="container mt-3">
-    {% for message in messages %}
-        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert">
-            {{ message }}
-        </div>
-    {% endfor %}
+<div class="container-fluid mt-3 px-4">
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags|default:"info" }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+  {% endfor %}
+  <script>
+    setTimeout(() => {
+      document.querySelectorAll('.alert').forEach(el => el.classList.remove('show'));
+    }, 7000);
+  </script>
 </div>
 {% endif %}
 
-<div class="container text-center mt-5">
-    <h2>Bienvenido, {{ request.user.username }} 👋</h2>
+<!-- Contenido -->
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <h1 class="fw-bold">👋 ¡Hola, {{ request.user.username }}!</h1>
+    <p class="text-muted">Aquí puedes administrar tu cuenta y acceder a tus restaurantes registrados.</p>
+  </div>
 
-    {% if request.user.perfil.membresia_activa %}
-        <p class="lead mt-4">
-            👑 Tu membresía está activa. <a href="{% url 'mis_restaurantes' %}" class="btn btn-outline-primary mt-3">📋 Ver Mis Restaurantes</a>
-        </p>
-    {% else %}
-        <p class="lead mt-4">
-            🙌 ¡Estás registrado! Para activar tu membresía y registrar restaurantes, realiza tu pago.
-        </p>
-
-        <!-- Botón para abrir Modal -->
-        <button type="button" class="btn btn-success btn-lg mt-3" data-bs-toggle="modal" data-bs-target="#checkoutModal">
-            Ver planes de pago
+  {% if request.user.perfil.membresia_activa %}
+    <div class="text-center">
+      <div class="alert alert-success rounded-4 p-4 shadow-sm mx-auto" style="max-width: 600px;">
+        <h4 class="mb-3">👑 Membresía Activa</h4>
+        <p class="mb-3">Tienes acceso completo a las herramientas de administración de restaurantes.</p>
+        <a href="{% url 'mis_restaurantes' %}" class="btn btn-outline-primary btn-lg px-4">📋 Ver Mis Restaurantes</a>
+      </div>
+    </div>
+  {% else %}
+    <div class="text-center">
+      <div class="alert alert-warning rounded-4 p-4 shadow-sm mx-auto" style="max-width: 600px;">
+        <h4 class="mb-3">⚠️ Membresía Inactiva</h4>
+        <p class="mb-3">Para registrar restaurantes y empezar a recibir pedidos, activa tu membresía.</p>
+        <button type="button" class="btn btn-success btn-lg px-4" data-bs-toggle="modal" data-bs-target="#checkoutModal">
+          💳 Activar Membresía
         </button>
+      </div>
+    </div>
+  {% endif %}
+</div>
 
-        <!-- Modal Bootstrap para Stripe Elements -->
-        <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <form id="payment-form">
-                        {% csrf_token %}
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="checkoutModalLabel">Planes de Membresía</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div id="card-element" class="form-control mb-3"></div>
-                            <div id="card-errors" role="alert" class="text-danger"></div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary w-100">Pagar Membresía ($450)</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+<!-- Modal de Stripe -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form id="payment-form">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title fw-semibold" id="checkoutModalLabel">Planes de Membresía</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
-    {% endif %}
+        <div class="modal-body">
+          <p class="text-muted mb-3">Por solo <strong>$450 MXN</strong>, desbloquea el acceso a las herramientas de gestión para tu restaurante.</p>
+          <div id="card-element" class="form-control mb-3"></div>
+          <div id="card-errors" role="alert" class="text-danger small"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary w-100 fw-semibold">Pagar y Activar Membresía</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
 <script>
-// Stripe Elements
-const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+  const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+  const elements = stripe.elements();
+  const card = elements.create('card');
+  card.mount('#card-element');
 
-let elements = stripe.elements();
-let card = elements.create('card');
-card.mount('#card-element');
+  card.on('change', event => {
+    document.getElementById('card-errors').textContent = event.error ? event.error.message : '';
+  });
 
-card.on('change', function(event) {
-    let displayError = document.getElementById('card-errors');
-    displayError.textContent = event.error ? event.error.message : '';
-});
-
-document.getElementById('payment-form').addEventListener('submit', async function(event) {
+  document.getElementById('payment-form').addEventListener('submit', async event => {
     event.preventDefault();
-
     const { clientSecret } = await fetch("/crear-payment-intent/", {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": "{{ csrf_token }}",
-            "Content-Type": "application/json"
-        }
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+        "Content-Type": "application/json"
+      }
     }).then(r => r.json());
 
     const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: { card: card }
+      payment_method: { card: card }
     });
 
     if (result.error) {
-        document.getElementById('card-errors').textContent = result.error.message;
+      document.getElementById('card-errors').textContent = result.error.message;
     } else if (result.paymentIntent.status === 'succeeded') {
-        window.location.href = "/perfil/?pago=exitoso";
+      window.location.href = "/perfil/?pago=exitoso";
     }
-});
+  });
 </script>
-
 {% endblock %}

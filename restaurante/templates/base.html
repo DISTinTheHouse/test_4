@@ -128,7 +128,7 @@
               <span class="menu-header-text">Apps &amp; Pages</span>
             </li>
             <li class="menu-item">
-              <a href="#" class="menu-link">
+              <a href="{% url 'landing' %}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-list-ul"></i>
                 <div class="text-truncate">Explorar Restaurantes</div>
               </a>
@@ -139,7 +139,7 @@
             </li>
       
             <li class="menu-item">
-              <a href="#" class="menu-link">
+              <a href="{% url 'perfil' %}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-user"></i>
                 <div class="text-truncate">Mi Perfil</div>
               </a>
@@ -212,7 +212,7 @@
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Misc</span></li>
             <li class="menu-item">
               <a
-                href="https://github.com/themeselection/sneat-html-admin-template-free/issues"
+                href="#"
                 target="_blank"
                 class="menu-link">
                 <i class="menu-icon tf-icons bx bx-support"></i>
@@ -322,7 +322,7 @@
                         <div class="dropdown-divider my-1"></div>
                       </li>
                       <li>
-                        <a class="dropdown-item" href="">
+                        <a class="dropdown-item" href="{% url 'logout' %}">
                           <i class="bx bx-power-off bx-md me-3"></i><span>Cerrar Sesión</span>
                         </a>
                       </li>
