@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid container-p-y">
+    <h2 class="mb-4">📋 Pedidos de {{ area|capfirst }}</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% if pedidos %}
+        <div class="row">
+            {% for pedido in pedidos %}
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow rounded-4 border-{{ 'warning' if pedido.estado == 'pendiente' else 'primary' }}">
+                        <div class="card-body">
+                            <h5 class="card-title">Mesa {{ pedido.mesa.numero_mesa }}</h5>
+                            <p class="card-text">
+                                {% if pedido.platillo %}
+                                    <strong>Platillo:</strong> {{ pedido.platillo.nombre }}<br>
+                                {% endif %}
+                                {% if pedido.bebida %}
+                                    <strong>Bebida:</strong> {{ pedido.bebida.nombre }}<br>
+                                {% endif %}
+                                <strong>Cantidad:</strong> {{ pedido.cantidad }}<br>
+                                <strong>Estado:</strong> {{ pedido.estado|capfirst }}<br>
+                                <small class="text-muted">{{ pedido.timestamp|date:"H:i:s" }}</small>
+                            </p>
+
+                            {% if pedido.estado != 'completado' %}
+                                <a href="{% url 'cambiar_estado_pedido' area=area pedido_id=pedido.id %}" class="btn btn-outline-{{ 'primary' if pedido.estado == 'pendiente' else 'success' }} w-100">
+                                    {% if pedido.estado == 'pendiente' %} Iniciar preparación
+                                    {% elif pedido.estado == 'en_proceso' %} Marcar como completado
+                                    {% endif %}
+                                </a>
+                            {% else %}
+                                <span class="badge bg-success">✔ Pedido completado</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            No hay pedidos activos por ahora.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

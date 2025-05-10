@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import *
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 import stripe
 from django.conf import settings
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -41,9 +43,20 @@ def mis_restaurantes(request):
 
     restaurantes = Restaurante.objects.filter(socio=perfil)
 
+    # Contar mesas por restaurante
+    conteo_mesas = {}
+    for r in restaurantes:
+        total = r.mesas.count()
+        disponibles = r.mesas.filter(disponibilidad=True).count()
+        conteo_mesas[r.id] = {
+            'total': total,
+            'disponibles': disponibles
+    }
+
     return render(request, 'restaurantes/mis_restaurantes.html', {
         'perfil': perfil,  # ✅ Agregado para usarlo directo en el template
         'restaurantes': restaurantes,
+        'conteo_mesas': conteo_mesas,
         'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLIC_KEY,
     })
 
@@ -150,4 +163,92 @@ def configurar_restaurante(request, slug):
         'barras': barras,
         'platillos': platillos,
         'bebidas': bebidas
+    })
+
+
+def pedido_rapido(request, slug, numero_mesa):
+    restaurante = get_object_or_404(Restaurante, slug=slug)
+    mesa = get_object_or_404(Mesa, restaurante=restaurante, numero_mesa=numero_mesa)
+
+    platillos = Platillo.objects.filter(restaurante=restaurante, disponible=True)
+    bebidas = Bebida.objects.filter(restaurante=restaurante, disponible=True)
+
+    if request.method == 'POST':
+        tipo = request.POST.get('tipo')  # 'cocina' o 'barra'
+        cantidad = int(request.POST.get('cantidad', 1))
+        platillo_id = request.POST.get('platillo')
+        bebida_id = request.POST.get('bebida')
+
+        platillo = Platillo.objects.get(id=platillo_id) if platillo_id else None
+        bebida = Bebida.objects.get(id=bebida_id) if bebida_id else None
+
+        pedido = Pedido.objects.create(
+            restaurante=restaurante,
+            mesa=mesa,
+            tipo=tipo,
+            estado='pendiente',
+            cantidad=cantidad,
+            platillo=platillo,
+            bebida=bebida
+        )
+
+        Notificacion.objects.create(
+            pedido=pedido,
+            mensaje=f"Nueva orden de {tipo} desde la mesa {mesa.numero_mesa}",
+            enviado_a=tipo
+        )
+
+        return redirect('pedido_rapido', slug=slug, numero_mesa=numero_mesa)
+
+    return render(request, 'restaurantes/pedido_rapido.html', {
+        'restaurante': restaurante,
+        'mesa': mesa,
+        'platillos': platillos,
+        'bebidas': bebidas,
+    })
+
+def cambiar_estado_pedido(request, area, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id, tipo=area)
+
+    if pedido.estado == 'pendiente':
+        pedido.estado = 'en_proceso'
+    elif pedido.estado == 'en_proceso':
+        pedido.estado = 'completado'
+
+    pedido.save()
+    messages.success(request, f"Pedido {pedido.id} actualizado a {pedido.estado}")
+    return redirect('dashboard_pedidos', area=area)
+
+
+@staff_member_required  # opcional, solo para usuarios del staff
+def dashboard_pedidos(request, area):
+    if area not in ['cocina', 'barra']:
+        return redirect('dashboard_pedidos', area='cocina')
+
+    pedidos = Pedido.objects.filter(
+        tipo=area,
+        estado__in=['pendiente', 'en_proceso']
+    ).order_by('timestamp')
+
+    return render(request, 'restaurantes/dashboard.html', {
+        'area': area,
+        'pedidos': pedidos
+    })
+
+# area para el socio ver sus restaurantes , messas y pedidos
+@login_required
+def mesas_restaurante(request, restaurante_id):
+    restaurante = get_object_or_404(Restaurante, id=restaurante_id, socio=request.user.perfil)
+    mesas = Mesa.objects.filter(restaurante=restaurante).order_by('numero_mesa')
+
+    # Mapear mesas a pedidos activos
+    pedidos_por_mesa = {
+        mesa.id: Pedido.objects.filter(mesa=mesa, estado__in=['pendiente', 'en_proceso'])
+        for mesa in mesas
+    }
+
+    return render(request, 'restaurantes/mesas_restaurante.html', {
+        'restaurante': restaurante,
+        'mesas': mesas,
+        'pedidos_por_mesa': pedidos_por_mesa
     })

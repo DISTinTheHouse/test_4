@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-
+{% load custom_tags %}
 {% block title %}Mis Restaurantes{% endblock %}
 
 {% block extra_head %}
@@ -33,19 +33,48 @@
     {% if restaurantes %}
         <div class="row">
             {% for r in restaurantes %}
+                {% with conteo=conteo_mesas|get_item:r.id %}
                 <div class="col-md-6 mb-4">
-                    <div class="card shadow">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ r.nombre }}</h5>
-                            <p class="card-text">
-                                <strong>Dirección:</strong> {{ r.direccion|default:"Sin dirección" }}<br>
-                                <strong>Teléfono:</strong> {{ r.telefono|default:"Sin teléfono" }}<br>
-                                <strong>Creado:</strong> {{ r.fecha_creacion|date:"d M Y H:i" }}
+                    <div class="card shadow-sm rounded-4 border-0">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center rounded-top-4">
+                            <h5 class="mb-0">🍽️ {{ r.nombre }}</h5>
+                            <span class="badge bg-secondary">
+                                ID: {{ r.id }}
+                            </span>
+                        </div>
+                        <div class="card-body text-center">
+                            <p class="mb-2 text-muted p-3">
+                                {% if r.direccion %}📍 {{ r.direccion }}<br>{% endif %}
+                                {% if r.telefono %}📞 {{ r.telefono }}<br>{% endif %}
+                                🕒 <small>Creado el {{ r.fecha_creacion|date:"d M Y, H:i" }}</small>
                             </p>
-                             <a href="{% url 'configurar_restaurante' slug=r.slug %}" class="btn btn-outline-secondary btn-sm">⚙️ Configuración</a>
+
+                            <hr>
+
+                            {% if conteo.total > 0 %}
+                                {% if conteo.disponibles == 0 %}
+                                    <span class="badge bg-danger mb-2">🪑 0/{{ conteo.total }} mesas disponibles</span><br>
+                                {% elif conteo.disponibles == conteo.total %}
+                                    <span class="badge bg-success mb-2">🪑 Todas las mesas disponibles ({{ conteo.total }})</span><br>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark mb-2">🪑 {{ conteo.disponibles }}/{{ conteo.total }} mesas disponibles</span><br>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">Aún sin mesas registradas</span><br>
+                            {% endif %}
+
+                            <div class="mt-3 d-flex gap-2">
+                                <a href="{% url 'configurar_restaurante' slug=r.slug %}" class="btn btn-outline-dark btn-sm w-50">
+                                    ⚙️ Configurar
+                                </a>
+                                <a href="{% url 'mesas_restaurante' restaurante_id=r.id %}" class="btn btn-primary btn-sm w-50">
+                                    🪑 Ver Mesas
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
+                {% endwith %}
             {% endfor %}
         </div>
     {% else %}

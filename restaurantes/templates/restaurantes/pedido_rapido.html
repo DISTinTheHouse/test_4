@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid flex-grow-1 container-p-y">
+    <div class="text-center mb-4">
+        <h1 class="display-6">{{ restaurante.nombre }}</h1>
+        <p class="lead text-muted">Mesa {{ mesa.numero_mesa }}</p>
+        <p class="text-success">Haz tu pedido aquí, sin registro y al instante 🍽️</p>
+    </div>
+
+    <div class="row">
+        <!-- Platillos -->
+        <div class="col-md-6 mb-4">
+            <h4>🍳 Cocina</h4>
+            {% for platillo in platillos %}
+            <form method="POST" class="card p-3 mb-3 shadow-sm rounded">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="cocina">
+                <input type="hidden" name="platillo" value="{{ platillo.id }}">
+                <input type="number" name="cantidad" class="form-control mb-2" value="1" min="1">
+                <strong>{{ platillo.nombre }}</strong>
+                <p class="text-muted small">{{ platillo.descripcion }}</p>
+                <button type="submit" class="btn btn-success w-100">Pedir ${{ platillo.precio }}</button>
+            </form>
+            {% endfor %}
+        </div>
+
+        <!-- Bebidas -->
+        <div class="col-md-6 mb-4">
+            <h4>🍹 Barra</h4>
+            {% for bebida in bebidas %}
+            <form method="POST" class="card p-3 mb-3 shadow-sm rounded">
+                {% csrf_token %}
+                <input type="hidden" name="tipo" value="barra">
+                <input type="hidden" name="bebida" value="{{ bebida.id }}">
+                <input type="number" name="cantidad" class="form-control mb-2" value="1" min="1">
+                <strong>{{ bebida.nombre }}</strong>
+                <p class="text-muted small">{{ bebida.descripcion }}</p>
+                <button type="submit" class="btn btn-primary w-100">Pedir ${{ bebida.precio }}</button>
+            </form>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

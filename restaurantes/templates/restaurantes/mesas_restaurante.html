@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <h2 class="mb-4">🍽️ Mesas de {{ restaurante.nombre }}</h2>
+
+    <div class="row">
+    {% for mesa in mesas %}
+        <div class="col-md-4 mb-4">
+            {% if mesa.disponibilidad %}
+                <div class="card border-success shadow-sm rounded-4">
+            {% else %}
+                <div class="card border-danger shadow-sm rounded-4">
+            {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">🪑 Mesa {{ mesa.numero_mesa }}</h5>
+                    <p>
+                        Estado: 
+                        {% if mesa.disponibilidad %}
+                            <span class="badge bg-success">Disponible</span>
+                        {% else %}
+                            <span class="badge bg-danger">Ocupada</span>
+                        {% endif %}
+                        <br>
+                        Capacidad: {{ mesa.capacidad|default:"No especificada" }}<br>
+                        {% if mesa.descripcion %}
+                            <small class="text-muted">{{ mesa.descripcion }}</small><br>
+                        {% endif %}
+                    </p>
+
+                    {% if pedidos_por_mesa.mesa.id %}
+                        <hr>
+                        <p><strong>Pedidos Activos:</strong></p>
+                        <ul class="list-unstyled">
+                            {% for p in pedidos_por_mesa.mesa.id %}
+                                <li>
+                                    <span class="badge bg-info text-dark">{{ p.tipo|capfirst }}</span>
+                                    {{ p.cantidad }}x {{ p.platillo|default:p.bebida }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <hr>
+                        <p class="text-muted mb-0">Sin pedidos activos</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+</div>
+{% endblock %}

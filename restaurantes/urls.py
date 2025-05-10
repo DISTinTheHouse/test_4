@@ -8,4 +8,9 @@ urlpatterns = [
     path('<slug:slug>/', views.detalle_restaurante, name='detalle_restaurante'),
     # configurar restaurante para socios
     path('configurar_restaurante/<slug:slug>/', views.configurar_restaurante, name='configurar_restaurante'),
+    path('r/<slug:slug>/mesa/<int:numero_mesa>/', views.pedido_rapido, name='pedido_rapido'),
+    path('dashboard/<str:area>/', views.dashboard_pedidos, name='dashboard_pedidos'),
+    path('dashboard/<str:area>/cambiar_estado/<int:pedido_id>/', views.cambiar_estado_pedido, name='cambiar_estado_pedido'),
+    # area para el socio ver restaurantes, mesas y pedidos
+    path('socio/restaurante/<int:restaurante_id>/mesas/', views.mesas_restaurante, name='mesas_restaurante'),
 ]
