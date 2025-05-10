@@ -6,4 +6,6 @@ urlpatterns = [
     path('crear-payment-intent-restaurante/', views.crear_payment_intent_restaurante, name='crear_payment_intent_restaurante'),
     # ver restaurantes para clientes
     path('<slug:slug>/', views.detalle_restaurante, name='detalle_restaurante'),
+    # configurar restaurante para socios
+    path('configurar_restaurante/<slug:slug>/', views.configurar_restaurante, name='configurar_restaurante'),
 ]

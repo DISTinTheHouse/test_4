@@ -42,7 +42,7 @@
                                 <strong>Teléfono:</strong> {{ r.telefono|default:"Sin teléfono" }}<br>
                                 <strong>Creado:</strong> {{ r.fecha_creacion|date:"d M Y H:i" }}
                             </p>
-                            <a href="#" class="btn btn-outline-secondary btn-sm disabled">⚙️ Configuración (próximamente)</a>
+                             <a href="{% url 'configurar_restaurante' slug=r.slug %}" class="btn btn-outline-secondary btn-sm">⚙️ Configuración</a>
                         </div>
                     </div>
                 </div>

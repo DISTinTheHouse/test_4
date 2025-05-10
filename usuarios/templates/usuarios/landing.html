@@ -94,7 +94,7 @@
               <td>{{ restaurante.direccion|default:"Sin dirección" }}</td>
               <td>{{ restaurante.telefono|default:"N/A" }}</td>
               <td>
-                <a href="#" class="btn btn-primary text-white btn-sm rounded-pill px-3">Agendar</a>
+                <a href="{% url 'detalle_restaurante' restaurante.slug %}" class="btn btn-primary text-white btn-sm rounded-pill px-3">Agendar</a>
               </td>
             </tr>
             {% empty %}

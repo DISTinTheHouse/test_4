@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid flex-grow-1 container-p-y">
+
+    <!-- Título del Restaurante -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <h1 class="display-4">Configuración del Restaurante: <strong>{{ restaurante.nombre }}</strong></h1>
+            <p><strong>Dirección:</strong> {{ restaurante.direccion|default:"Sin dirección" }}</p>
+            <p><strong>Teléfono:</strong> {{ restaurante.telefono|default:"Sin teléfono" }}</p>
+            <p><strong>Creado el:</strong> {{ restaurante.fecha_creacion|date:"d M Y H:i" }}</p>
+        </div>
+    </div>
+
+    <!-- Panel de Configuración -->
+    <div class="row">
+        <!-- Sección para agregar mesas -->
+        <div class="col-12 col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="card-title">Agregar Mesa</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="numero_mesa" class="form-label">Número de Mesa</label>
+                            <input type="number" class="form-control" name="numero_mesa" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="capacidad" class="form-label">Capacidad</label>
+                            <input type="number" class="form-control" name="capacidad" value="4" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción (Opcional)</label>
+                            <input type="text" class="form-control" name="descripcion">
+                        </div>
+                        <button type="submit" name="add_mesa" class="btn btn-primary">Agregar Mesa</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección para agregar barras -->
+        <div class="col-12 col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="card-title">Agregar Barra</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="numero_barra" class="form-label">Número de Barra</label>
+                            <input type="number" class="form-control" name="numero_barra" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="capacidad" class="form-label">Capacidad</label>
+                            <input type="number" class="form-control" name="capacidad" value="5" required>
+                        </div>
+                        <button type="submit" name="add_barra" class="btn btn-primary">Agregar Barra</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel para agregar platillos -->
+    <div class="row">
+        <div class="col-12 col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="card-title">Agregar Platillo</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="nombre_platillo" class="form-label">Nombre del Platillo</label>
+                            <input type="text" class="form-control" name="nombre_platillo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descripcion_platillo" class="form-label">Descripción (Opcional)</label>
+                            <textarea class="form-control" name="descripcion_platillo"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="precio_platillo" class="form-label">Precio</label>
+                            <input type="number" class="form-control" name="precio_platillo" step="0.01" required>
+                        </div>
+                        <button type="submit" name="add_platillo" class="btn btn-primary">Agregar Platillo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel para agregar bebidas -->
+        <div class="col-12 col-md-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="card-title">Agregar Bebida</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="nombre_bebida" class="form-label">Nombre de la Bebida</label>
+                            <input type="text" class="form-control" name="nombre_bebida" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descripcion_bebida" class="form-label">Descripción (Opcional)</label>
+                            <textarea class="form-control" name="descripcion_bebida"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="precio_bebida" class="form-label">Precio</label>
+                            <input type="number" class="form-control" name="precio_bebida" step="0.01" required>
+                        </div>
+                        <button type="submit" name="add_bebida" class="btn btn-primary">Agregar Bebida</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de Mesas, Barras, Platillos y Bebidas -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3>Mesas</h3>
+            <ul class="list-group">
+                {% for mesa in mesas %}
+                    <li class="list-group-item">
+                        Mesa {{ mesa.numero_mesa }} - Capacidad: {{ mesa.capacidad }} - Descripción: {{ mesa.descripcion|default:"Sin descripción" }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="col-12 mt-4">
+            <h3>Barras</h3>
+            <ul class="list-group">
+                {% for barra in barras %}
+                    <li class="list-group-item">
+                        Barra {{ barra.numero_barra }} - Capacidad: {{ barra.capacidad }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="col-12 mt-4">
+            <h3>Platillos</h3>
+            <ul class="list-group">
+                {% for platillo in platillos %}
+                    <li class="list-group-item">
+                        {{ platillo.nombre }} - Precio: ${{ platillo.precio }} - Descripción: {{ platillo.descripcion|default:"Sin descripción" }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="col-12 mt-4">
+            <h3>Bebidas</h3>
+            <ul class="list-group">
+                {% for bebida in bebidas %}
+                    <li class="list-group-item">
+                        {{ bebida.nombre }} - Precio: ${{ bebida.precio }} - Descripción: {{ bebida.descripcion|default:"Sin descripción" }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
