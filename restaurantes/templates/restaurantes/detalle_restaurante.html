@@ -1,38 +1,47 @@
 {% extends 'base.html' %}
-{% load static %}
-
-{% block title %}{{ restaurante.nombre }} | QResto{% endblock %}
 
 {% block content %}
-<div class="container mt-5 mb-5">
+<div class="container-fluid flex-grow-1 container-p-y">
     <div class="row justify-content-center">
         <div class="col-md-8">
 
-            <div class="card shadow rounded-4">
+            <!-- Card principal del Restaurante -->
+            <div class="card shadow-lg rounded-4">
+                <div class="card-header text-center bg-primary text-white">
+                    <h1 class="display-4 mb-2">{{ restaurante.nombre }}</h1>
+                    <p class="lead">{{ restaurante.direccion|default:"Sin dirección" }}</p>
+                </div>
+
+                <!-- Cuerpo de la Card -->
                 <div class="card-body text-center">
-                    <h1 class="display-5 mb-3">🍴 {{ restaurante.nombre }}</h1>
-                    
+                    <img src="#" class="img-fluid rounded mb-4" alt="{{ restaurante.nombre }}" style="max-height: 300px; object-fit: cover;">
+
                     <p class="text-muted mb-4">
-                        {% if restaurante.direccion %}
-                            <i class="bx bx-map"></i> {{ restaurante.direccion }}<br>
-                        {% endif %}
                         {% if restaurante.telefono %}
-                            <i class="bx bx-phone"></i> {{ restaurante.telefono }}
+                            <i class="bx bx-phone"></i> {{ restaurante.telefono }}<br>
                         {% endif %}
                     </p>
 
-                    <hr>
-
+                    <!-- Mensaje de disponibilidad para agendar -->
                     <div class="mb-4">
-                        <p class="lead">¿Listo para hacer tu pedido o agendar?</p>
-                        <a href="#" class="btn btn-primary btn-lg disabled">
-                            🚧 Función de pedidos en construcción
-                        </a>
+                        {% if restaurante_disponible %}
+                            <p class="lead text-success">¡El restaurante está disponible para agendar tu mesa!</p>
+                            <a href="#" class="btn btn-primary btn-lg">
+                                📅 Agendar ahora
+                            </a>
+                        {% else %}
+                            <p class="lead text-danger">Lo sentimos, no hay mesas disponibles para agendar en este momento.</p>
+                            <a href="#" class="btn btn-secondary btn-lg disabled">
+                                🚧 Función de pedidos en construcción
+                            </a>
+                        {% endif %}
                     </div>
 
-                    <small class="text-muted">
+                    <!-- Información adicional del restaurante -->
+                    <hr>
+                    <p class="text-muted">
                         Restaurante registrado el {{ restaurante.fecha_creacion|date:"d M Y, H:i" }}
-                    </small>
+                    </p>
                 </div>
             </div>
 

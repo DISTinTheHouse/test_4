@@ -66,7 +66,18 @@ def crear_payment_intent_restaurante(request):
 # para los que no tienen usuario y quieren agendar
 def detalle_restaurante(request, slug):
     restaurante = get_object_or_404(Restaurante, slug=slug)
-    return render(request, 'restaurantes/detalle_restaurante.html', {'restaurante': restaurante})
+
+    # Verificar si hay mesas disponibles
+    mesas_disponibles = Mesa.objects.filter(restaurante=restaurante, disponibilidad=True)
+
+    # Determinar si el restaurante está disponible para agendar
+    restaurante_disponible = True if mesas_disponibles.exists() else False
+
+    return render(request, 'restaurantes/detalle_restaurante.html', {
+        'restaurante': restaurante,
+        'restaurante_disponible': restaurante_disponible,
+    })
+
 
 # para los socios y configuración
 def configurar_restaurante(request, slug):
