@@ -39,7 +39,7 @@
                                     <div class="modal-body text-center">
                                         <p class="fw-semibold mb-2">Escanea o comparte esta URL:</p>
                                         <code class="small d-block mb-3 text-break">
-                                            {{ request.scheme }}://{{ request.get_host }}{% url 'pedido_rapido' slug=restaurante.slug numero_mesa=mesa.numero_mesa %}
+                                            {{ request.scheme }}://{{ request.get_host }}/restaurantes{% url 'pedido_rapido' slug=restaurante.slug numero_mesa=mesa.numero_mesa %}
                                         </code>
 
                                         <img src="{% url 'qr_mesa' slug=restaurante.slug numero_mesa=mesa.numero_mesa %}" alt="QR Mesa {{ mesa.numero_mesa }}" class="img-fluid rounded shadow-sm mb-3" style="max-width: 200px;">

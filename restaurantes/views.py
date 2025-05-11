@@ -17,7 +17,7 @@ from django.http import HttpResponse
 
 @login_required
 def qr_mesa(request, slug, numero_mesa):
-    url = f"{request.scheme}://{request.get_host()}/r/{slug}/mesa/{numero_mesa}/"
+    url = f"{request.scheme}://{request.get_host()}/restaurantes/r/{slug}/mesa/{numero_mesa}/"
     qr = qrcode.make(url)
     buffer = BytesIO()
     qr.save(buffer, format='PNG')
