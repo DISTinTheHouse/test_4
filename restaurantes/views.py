@@ -10,6 +10,22 @@ import stripe
 from django.conf import settings
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+#QR DE MESAS
+import qrcode
+from io import BytesIO
+from django.http import HttpResponse
+
+@login_required
+def qr_mesa(request, slug, numero_mesa):
+    url = f"{request.scheme}://{request.get_host()}/r/{slug}/mesa/{numero_mesa}/"
+    qr = qrcode.make(url)
+    buffer = BytesIO()
+    qr.save(buffer, format='PNG')
+    buffer.seek(0)
+
+    return HttpResponse(buffer.getvalue(), content_type='image/png')
+
+
 @login_required
 def mis_restaurantes(request):
     perfil = request.user.perfil
@@ -206,6 +222,7 @@ def pedido_rapido(request, slug, numero_mesa):
         'platillos': platillos,
         'bebidas': bebidas,
     })
+
 
 def cambiar_estado_pedido(request, area, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id, tipo=area)

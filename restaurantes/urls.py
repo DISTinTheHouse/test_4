@@ -2,6 +2,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # qr de mesas:
+    path('qr/<slug:slug>/<int:numero_mesa>/', views.qr_mesa, name='qr_mesa'),
+    # /-----------
     path('mis/', views.mis_restaurantes, name='mis_restaurantes'),
     path('crear-payment-intent-restaurante/', views.crear_payment_intent_restaurante, name='crear_payment_intent_restaurante'),
     # ver restaurantes para clientes
