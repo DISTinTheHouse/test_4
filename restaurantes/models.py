@@ -95,3 +95,17 @@ class Notificacion(models.Model):
 
     def __str__(self):
         return f"Notificación {self.id} - {self.enviado_a}"
+
+class Cita(models.Model):
+    id = models.AutoField(primary_key=True)
+    restaurante = models.ForeignKey(Restaurante, on_delete=models.CASCADE, related_name='citas')
+    mesa = models.ForeignKey(Mesa, on_delete=models.SET_NULL, null=True, blank=True)
+    nombre_cliente = models.CharField(max_length=100)
+    telefono = models.CharField(max_length=20)
+    fecha = models.DateField()
+    hora = models.TimeField()
+    confirmado = models.BooleanField(default=False)
+    creada_en = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.nombre_cliente} - Mesa {self.mesa.numero_mesa if self.mesa else 'N/A'} - {self.fecha} {self.hora}"

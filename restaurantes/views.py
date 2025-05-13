@@ -107,6 +107,82 @@ def detalle_restaurante(request, slug):
         'restaurante_disponible': restaurante_disponible,
     })
 
+def agendar_cita(request, slug):
+    restaurante = get_object_or_404(Restaurante, slug=slug)
+    mesas_disponibles = Mesa.objects.filter(restaurante=restaurante, disponibilidad=True)
+
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        telefono = request.POST.get('telefono')
+        fecha = request.POST.get('fecha')
+        hora = request.POST.get('hora')
+        mesa_id = request.POST.get('mesa_id')
+
+        if nombre and telefono and fecha and hora and mesa_id:
+            mesa = get_object_or_404(Mesa, id=mesa_id, restaurante=restaurante)
+
+            # Crear la cita
+            cita = Cita.objects.create(
+                restaurante=restaurante,
+                mesa=mesa,
+                nombre_cliente=nombre,
+                telefono=telefono,
+                fecha=fecha,
+                hora=hora,
+                confirmado=False,
+                creada_en=timezone.now()
+            )
+
+            # Marcar la mesa como ocupada
+            mesa.disponibilidad = False
+            mesa.save()
+
+            return redirect('confirmacion_agenda')  # define esta vista simple
+
+    return render(request, 'restaurantes/agendar_publico.html', {
+        'restaurante': restaurante,
+        'mesas': mesas_disponibles,
+    })
+
+
+def agendar_mesa_publico(request, slug):
+    restaurante = get_object_or_404(Restaurante, slug=slug)
+    mesas_disponibles = Mesa.objects.filter(restaurante=restaurante, disponibilidad=True)
+
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        telefono = request.POST.get('telefono')
+        fecha = request.POST.get('fecha')
+        hora = request.POST.get('hora')
+        mesa_id = request.POST.get('mesa_id')
+
+        if nombre and telefono and fecha and hora and mesa_id:
+            mesa = get_object_or_404(Mesa, id=mesa_id, restaurante=restaurante)
+            
+            # Guardar la cita
+            Cita.objects.create(
+                restaurante=restaurante,
+                mesa=mesa,
+                nombre=nombre,
+                telefono=telefono,
+                fecha=fecha,
+                hora=hora,
+            )
+
+            mesa.disponibilidad = False
+            mesa.save()
+
+            return redirect('confirmacion_agenda')  # redirecciona a una vista de éxito
+
+    return render(request, 'restaurantes/agendar_publico.html', {
+        'restaurante': restaurante,
+        'mesas': mesas_disponibles,
+    })
+
+def confirmacion_agenda(request, cita_id):
+    cita = get_object_or_404(Cita, id=cita_id)
+    return render(request, 'restaurantes/confirmacion.html', {'cita': cita})
+
 
 # para los socios y configuración
 def configurar_restaurante(request, slug):

@@ -9,6 +9,8 @@ urlpatterns = [
     path('crear-payment-intent-restaurante/', views.crear_payment_intent_restaurante, name='crear_payment_intent_restaurante'),
     # ver restaurantes para clientes
     path('<slug:slug>/', views.detalle_restaurante, name='detalle_restaurante'),
+    path('restaurante/<slug:slug>/agendar/', views.agendar_cita, name='agendar_cita'),
+    path('confirmacion/<int:cita_id>/', views.confirmacion_agenda, name='confirmacion_agenda'),
     # configurar restaurante para socios
     path('configurar_restaurante/<slug:slug>/', views.configurar_restaurante, name='configurar_restaurante'),
     path('r/<slug:slug>/mesa/<int:numero_mesa>/', views.pedido_rapido, name='pedido_rapido'),

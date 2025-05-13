@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Reservar Mesa - {{ restaurante.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow-lg p-4">
+    <h2 class="mb-4 text-center">📅 Reservar mesa en <strong>{{ restaurante.nombre }}</strong></h2>
+    <p class="text-muted mb-4 text-center">Llena tus datos y selecciona una mesa disponible para agendar tu visita. Asegúrate de verificar la fecha y hora.</p>
+
+    <form method="POST" class="row g-3">
+      {% csrf_token %}
+
+      <div class="col-md-6">
+        <label for="nombre" class="form-label">Nombre completo</label>
+        <input type="text" name="nombre" class="form-control" placeholder="Ej. Juan Pérez" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="telefono" class="form-label">Teléfono</label>
+        <input type="text" name="telefono" class="form-control" placeholder="Ej. 55-1234-5678" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="fecha" class="form-label">Fecha</label>
+        <input type="date" name="fecha" class="form-control" required>
+      </div>
+
+      <div class="col-md-6">
+        <label for="hora" class="form-label">Hora</label>
+        <input type="time" name="hora" class="form-control" required>
+      </div>
+
+      <div class="col-12">
+        <label for="mesa_id" class="form-label">Selecciona una mesa disponible</label>
+        <select name="mesa_id" class="form-select" required>
+          {% for mesa in mesas %}
+            <option value="{{ mesa.id }}">Mesa {{ mesa.numero_mesa }} (Capacidad: {{ mesa.capacidad }})</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-12 text-center mt-4">
+        <button type="submit" class="btn btn-primary btn-lg">✅ Confirmar Reserva</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
