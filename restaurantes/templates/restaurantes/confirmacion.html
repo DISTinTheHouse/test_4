@@ -3,23 +3,39 @@
 {% block title %}Confirmación de Reserva{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <div class="card shadow p-4">
-    <h2 class="text-success text-center mb-4">✅ ¡Tu reservación fue exitosa!</h2>
-    <p class="text-center text-muted">Aquí tienes los detalles de tu cita, guárdalos por si las moscas:</p>
+<div class="container-fluid mt-5 p-4">
+  <div class="card shadow-lg border-0 p-5">
+    <div class="text-center">
+      <h2 class="text-success fw-bold mb-3">✅ ¡Tu reservación fue exitosa!</h2>
+      <p class="text-muted">Aquí tienes los detalles de tu cita. Guárdalos o mándalos por WhatsApp por si las dudas:</p>
+    </div>
 
-    <ul class="list-group list-group-flush mt-4">
-      <li class="list-group-item"><strong>Restaurante:</strong> {{ cita.restaurante.nombre }}</li>
-      <li class="list-group-item"><strong>Dirección:</strong> {{ cita.restaurante.direccion }}</li>
-      <li class="list-group-item"><strong>Cliente:</strong> {{ cita.nombre_cliente }}</li>
-      <li class="list-group-item"><strong>Teléfono:</strong> {{ cita.telefono }}</li>
-      <li class="list-group-item"><strong>Mesa:</strong> {{ cita.mesa.numero_mesa }}</li>
-      <li class="list-group-item"><strong>Fecha:</strong> {{ cita.fecha }}</li>
-      <li class="list-group-item"><strong>Hora:</strong> {{ cita.hora }}</li>
+    <ul class="list-group list-group-flush my-4">
+      <li class="list-group-item"><strong>🏨 Restaurante:</strong> {{ cita.restaurante.nombre }}</li>
+      <li class="list-group-item"><strong>📍 Dirección:</strong> {{ cita.restaurante.direccion }}</li>
+      <li class="list-group-item"><strong>🙋 Cliente:</strong> {{ cita.nombre_cliente }}</li>
+      <li class="list-group-item"><strong>📞 Teléfono:</strong> {{ cita.telefono }}</li>
+      <li class="list-group-item"><strong>🪑 Mesa:</strong> {{ cita.mesa.numero_mesa }}</li>
+      <li class="list-group-item"><strong>📅 Fecha:</strong> {{ cita.fecha }}</li>
+      <li class="list-group-item"><strong>⏰ Hora:</strong> {{ cita.hora }}</li>
     </ul>
 
     <div class="text-center mt-4">
-      <a href="{% url 'detalle_restaurante' cita.restaurante.slug %}" class="btn btn-outline-primary">🔙 Volver al restaurante</a>
+      <a href="{% url 'detalle_restaurante' cita.restaurante.slug %}" class="btn btn-outline-primary me-2">
+        🔙 Volver al restaurante
+      </a>
+
+      <a href="https://wa.me/52{{ cita.telefono|cut:'-'|cut:' ' }}?text={{ 
+        'Hola ' |add:cita.nombre_cliente|add:', tu reserva en ' 
+        |add:cita.restaurante.nombre|add:' está confirmada para el ' 
+        |add:cita.fecha|stringformat:"s"|add:' a las ' 
+        |add:cita.hora|stringformat:"s"|add:' hrs. Mesa ' 
+        |add:cita.mesa.numero_mesa|stringformat:"s"|add:'. ¡Gracias!' 
+        |urlencode 
+      }}" 
+      target="_blank" class="btn btn-success">
+        📲 Enviar por WhatsApp
+      </a>
     </div>
   </div>
 </div>

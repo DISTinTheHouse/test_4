@@ -6,6 +6,7 @@ from .models import *
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
+import requests
 import stripe
 from django.conf import settings
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -184,6 +185,41 @@ def confirmacion_agenda(request, cita_id):
     return render(request, 'restaurantes/confirmacion.html', {'cita': cita})
 
 
+# Mensaje para el socio del restaurante
+# mensaje_socio = (
+#     f"📢 Nueva reservación en *{restaurante.nombre}*\n"
+#     f"🙋 Cliente: {nombre}\n"
+#     f"🪑 Mesa: {mesa.numero_mesa}\n"
+#     f"📅 Fecha: {fecha}\n"
+#     f"⏰ Hora: {hora} hrs"
+# )
+
+# # Teléfono del socio (asumiendo que existe en su perfil)
+# telefono_socio = restaurante.socio.telefono  # Asegúrate que este campo existe
+
+# # Limpieza del número
+# telefono_socio = str(telefono_socio).replace("-", "").replace(" ", "")
+
+# # WhatsApp Cloud API config
+# headers = {
+#     "Authorization": f"Bearer {WHATSAPP_TOKEN}",
+#     "Content-Type": "application/json"
+# }
+
+# payload_socio = {
+#     "messaging_product": "whatsapp",
+#     "to": f"52{telefono_socio}",
+#     "type": "text",
+#     "text": {"body": mensaje_socio}
+# }
+
+# # Enviar mensaje al socio
+# try:
+#     requests.post(f"https://graph.facebook.com/v18.0/{WHATSAPP_PHONE_ID}/messages", json=payload_socio, headers=headers)
+# except Exception as e:
+#     print("Error enviando WhatsApp al socio:", e)
+
+
 # para los socios y configuración
 def configurar_restaurante(request, slug):
     restaurante = get_object_or_404(Restaurante, slug=slug)
@@ -345,3 +381,4 @@ def mesas_restaurante(request, restaurante_id):
         'mesas': mesas,
         'pedidos_por_mesa': pedidos_por_mesa
     })
+
