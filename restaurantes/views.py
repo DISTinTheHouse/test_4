@@ -160,10 +160,10 @@ def agendar_mesa_publico(request, slug):
             mesa = get_object_or_404(Mesa, id=mesa_id, restaurante=restaurante)
             
             # Guardar la cita
-            Cita.objects.create(
+            cita = Cita.objects.create(
                 restaurante=restaurante,
                 mesa=mesa,
-                nombre=nombre,
+                nombre_cliente=nombre,
                 telefono=telefono,
                 fecha=fecha,
                 hora=hora,
@@ -172,7 +172,7 @@ def agendar_mesa_publico(request, slug):
             mesa.disponibilidad = False
             mesa.save()
 
-            return redirect('confirmacion_agenda')  # redirecciona a una vista de éxito
+            return redirect('confirmacion_agenda', cita_id=cita.id)  # redirecciona a una vista de éxito
 
     return render(request, 'restaurantes/agendar_publico.html', {
         'restaurante': restaurante,
