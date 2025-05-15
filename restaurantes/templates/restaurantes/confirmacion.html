@@ -25,17 +25,26 @@
         🔙 Volver al restaurante
       </a>
 
-      <a href="https://wa.me/52{{ cita.telefono|cut:'-'|cut:' ' }}?text={{ 
-        'Hola ' |add:cita.nombre_cliente|add:', tu reserva en ' 
-        |add:cita.restaurante.nombre|add:' está confirmada para el ' 
-        |add:cita.fecha|stringformat:"s"|add:' a las ' 
-        |add:cita.hora|stringformat:"s"|add:' hrs. Mesa ' 
-        |add:cita.mesa.numero_mesa|stringformat:"s"|add:'. ¡Gracias!' 
-        |urlencode 
-      }}" 
-      target="_blank" class="btn btn-success">
-        📲 Enviar por WhatsApp
-      </a>
+      <button id="btn-whatsapp" class="btn btn-success">
+        📲 Enviar confirmación por WhatsApp
+      </button>
+
+      <script>
+        document.getElementById('btn-whatsapp').addEventListener('click', function () {
+          fetch("{% url 'enviar_whatsapp' cita.id %}")
+            .then(response => response.json())
+            .then(data => {
+              console.log(data);
+              alert("Mensaje enviado por WhatsApp ✅");
+            })
+            .catch(error => {
+              console.error(error);
+              alert("Error al enviar mensaje ❌");
+            });
+        });
+      </script>
+
+
     </div>
   </div>
 </div>

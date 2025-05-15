@@ -180,6 +180,43 @@ def agendar_mesa_publico(request, slug):
         'mesas': mesas_disponibles,
     })
 
+
+
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+import requests
+
+def enviar_confirmacion_whatsapp(request, cita_id):
+    cita = get_object_or_404(Cita, id=cita_id)
+
+    url = "https://graph.facebook.com/v17.0/683402724847602/messages"
+    headers = {
+        "Authorization": "Bearer EAARDEZAVONqsBOZChYeZBaG9TFpz35WzvGEhuFa77sxBy9eJjSI6CzYDgpuvJahl83ZAwKaxeIa8geTBei1dC6Wahy6ZCEWhn1M0vzSAz0OkXkW8kAIWrBXl8QxKbaQjyXAhvSzcUCZAiNj7YTjDTrKyQYSdp6ZBcTKj2aBvaQPR6pZCOAZAesj4Bup9dMaEiZCjRKeKStwQ1z4RfOrIJgBigOi0Ui",  # ← pega aquí el bueno
+        "Content-Type": "application/json"
+    }
+
+    data = {
+        "messaging_product": "whatsapp",
+        "to": f"523338449486",  # ahora que ya confirmaste que es válido
+        "type": "template",
+        "template": {
+            "name": "hello_world",
+            "language": {"code": "en_US"},
+        }
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    print("Payload:", data)
+    print("Status:", response.status_code)
+    print("Respuesta:", response.json())
+    return JsonResponse(response.json())
+
+
+
+
+
+
+
 def confirmacion_agenda(request, cita_id):
     cita = get_object_or_404(Cita, id=cita_id)
     return render(request, 'restaurantes/confirmacion.html', {'cita': cita})

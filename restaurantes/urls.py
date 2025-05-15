@@ -10,6 +10,7 @@ urlpatterns = [
     # ver restaurantes para clientes
     path('<slug:slug>/', views.detalle_restaurante, name='detalle_restaurante'),
     path('restaurante/<slug:slug>/agendar/', views.agendar_mesa_publico, name='agendar_cita'),
+    path('cita/<int:cita_id>/enviar_whatsapp/', views.enviar_confirmacion_whatsapp, name='enviar_whatsapp'),
     path('restaurantes/confirmacion/<int:cita_id>/', views.confirmacion_agenda, name='confirmacion_agenda'),
     # configurar restaurante para socios
     path('configurar_restaurante/<slug:slug>/', views.configurar_restaurante, name='configurar_restaurante'),
