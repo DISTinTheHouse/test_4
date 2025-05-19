@@ -364,12 +364,27 @@ def pedido_rapido(request, slug, numero_mesa):
         )
 
         return redirect('pedido_rapido', slug=slug, numero_mesa=numero_mesa)
+    
+     # Obtiene los pedidos pendientes de esa mesa y restaurante
+    pedidos = Pedido.objects.filter(
+        restaurante=restaurante,
+        mesa=mesa,
+        estado='pendiente'
+    ).order_by('-id')
+
+    # Calcula el total
+    total_a_pagar = sum([
+        (pedido.platillo.precio if pedido.platillo else pedido.bebida.precio) * pedido.cantidad
+        for pedido in pedidos
+    ])
 
     return render(request, 'restaurantes/pedido_rapido.html', {
         'restaurante': restaurante,
         'mesa': mesa,
         'platillos': platillos,
         'bebidas': bebidas,
+        'pedidos': pedidos,
+        'total_a_pagar': total_a_pagar,
     })
 
 
