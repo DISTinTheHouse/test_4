@@ -35,6 +35,7 @@
     <!-- Core CSS -->
     <link rel="stylesheet" href="{% static 'assets/vendor/css/core.css' %}" class="template-customizer-core-css" />
     <link rel="stylesheet" href="{% static 'assets/vendor/css/theme-default.css' %}" class="template-customizer-theme-css" />
+    <link rel="stylesheet" href="{% static 'assets/css/demo.css' %}" />
 
     <!-- Helpers -->
     <script src="{% static 'assets/vendor/js/helpers.js' %}"></script>
@@ -51,7 +52,7 @@
       <div class="layout-container">
         <!-- Menu -->
 
-        <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+        <aside id="layout-menu" class="layout-menu menu-vertical menu" style="background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('{% static 'img/green.jpg' %}'); background-size: cover; background-position: center;"">
           <div class="app-brand demo">
             <a href="index.html" class="app-brand-link">
               <span class="app-brand-logo demo">
@@ -103,10 +104,10 @@
                   </g>
                 </svg>
               </span>
-              <span class="app-brand-text demo menu-text fw-bold ms-2">QResto</span>
+              <span class="app-brand-text demo menu-text fw-bold ms-2 text-white">QResto</span>
             </a>
 
-            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none" style="background-color: #036666;">
               <i class="bx bx-chevron-left bx-sm d-flex align-items-center justify-content-center"></i>
             </a>
           </div>
@@ -117,8 +118,8 @@
             <!-- Dashboards -->
             <li class="menu-item active open">
               <a href="{% url 'landing' %}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-home-smile"></i>
-                <div class="text-truncate" data-i18n="Dashboards">Inicio</div>
+                <i class="menu-icon tf-icons bx bx-home-smile" style="color: #99e2b4;"></i>
+                <div class="text-truncate text-white" data-i18n="Dashboards">Inicio</div>
                 <!-- <span class="badge rounded-pill bg-danger ms-auto">5</span> -->
               </a>
             </li>
@@ -129,19 +130,19 @@
             </li>
             <li class="menu-item">
               <a href="{% url 'landing' %}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-list-ul"></i>
-                <div class="text-truncate">Explorar Restaurantes</div>
+                <i class="menu-icon tf-icons bx bx-list-ul" style="color: #99e2b4;"></i>
+                <div class="text-truncate text-white">Explorar Restaurantes</div>
               </a>
             </li>
             {% if request.user.is_authenticated %}
             <li class="menu-header small text-uppercase">
-              <span class="menu-header-text">Mi cuenta</span>
+              <span class="menu-header-text text-white">Mi cuenta</span>
             </li>
       
             <li class="menu-item">
               <a href="{% url 'perfil' %}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-user"></i>
-                <div class="text-truncate">Mi Perfil</div>
+                <i class="menu-icon tf-icons bx bx-user" style="color: #99e2b4;"></i>
+                <div class="text-truncate text-white">Mi Perfil</div>
               </a>
             </li>
 
@@ -149,9 +150,9 @@
             <!-- Menú exclusivo para socios -->
             <li class="menu-item">
               <a href="{% url 'mis_restaurantes' %}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-restaurant"></i>
-                <div class="text-truncate">Mis Restaurantes</div>
-                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">Pro</div>
+                <i class="menu-icon tf-icons bx bx-restaurant" style="color: #99e2b4;"></i>
+                <div class="text-truncate text-white">Mis Restaurantes</div>
+                <div class="badge rounded-pill bg-label-success text-uppercase fs-tiny ms-auto">Pro</div>
               </a>
             </li>
 
@@ -164,17 +165,17 @@
 
             <li class="menu-item">
               <a href="#" class="menu-link disabled">
-                <i class="menu-icon tf-icons bx bx-cog"></i>
-                <div class="text-truncate">Configuración</div>
+                <i class="menu-icon tf-icons bx bx-cog" style="color: #99e2b4;"></i>
+                <div class="text-truncate text-white">Configuración</div>
               </a>
             </li>
           {% else %}
             <!-- Loggeado sin membresía activa -->
             <li class="menu-item">
               <a href="{% url 'perfil' %}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-lock"></i>
-                <div class="text-truncate">Activar Membresía</div>
-                <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">Pro</div>
+                <i class="menu-icon tf-icons bx bx-lock" style="color: #99e2b4;"></i>
+                <div class="text-truncate text-white">Activar Membresía</div>
+                <div class="badge rounded-pill bg-label-success text-uppercase fs-tiny ms-auto">Pro</div>
               </a>
             </li>
           {% endif %}
@@ -189,21 +190,21 @@
         {% else %}
           <!-- Usuario no loggeado -->
           <li class="menu-header small text-uppercase mt-4">
-            <span class="menu-header-text">Acceso</span>
+            <span class="menu-header-text text-white">Acceso</span>
           </li>
 
           <li class="menu-item">
             <a href="{% url 'login' %}" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-log-in"></i>
-              <div class="text-truncate">Iniciar Sesión</div>
+              <i class="menu-icon tf-icons bx bx-log-in" style="color: #99e2b4;"></i>
+              <div class="text-truncate text-white">Iniciar Sesión</div>
             </a>
           </li>
 
           <li class="menu-item">
             <a href="{% url 'registro' %}" class="menu-link">
-              <i class="menu-icon tf-icons bx bx-user-plus"></i>
-              <div class="text-truncate">Hazte Socio</div>
-              <div class="badge rounded-pill bg-label-primary text-uppercase fs-tiny ms-auto">Pro</div>
+              <i class="menu-icon tf-icons bx bx-user-plus" style="color: #99e2b4;"></i>
+              <div class="text-truncate text-white">Hazte Socio</div>
+              <div class="badge rounded-pill bg-label-success text-uppercase fs-tiny ms-auto">Pro</div>
             </a>
           </li>
         {% endif %}
@@ -215,8 +216,8 @@
                 href="#"
                 target="_blank"
                 class="menu-link">
-                <i class="menu-icon tf-icons bx bx-support"></i>
-                <div class="text-truncate" data-i18n="Support">Soporte</div>
+                <i class="menu-icon tf-icons bx bx-support" style="color: #99e2b4;"></i>
+                <div class="text-truncate text-white" data-i18n="Support">Soporte</div>
               </a>
             </li>
           </ul>
