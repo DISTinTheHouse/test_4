@@ -1,4 +1,4 @@
-QResto - Sistema Web para Restaurantes con QR
+MESA LISTA
 
 Copyright (c) 2025
 
