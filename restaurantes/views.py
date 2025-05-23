@@ -78,6 +78,15 @@ def mis_restaurantes(request):
     })
 
 
+@login_required
+def dashboard_restaurante(request, slug):
+    restaurante = get_object_or_404(Restaurante, slug=slug, socio=request.user.perfil)
+
+    return render(request, 'restaurantes/dashboard_restaurante.html', {
+        'restaurante': restaurante,
+    })
+
+
 @csrf_exempt
 def crear_payment_intent_restaurante(request):
     if request.method == 'POST':
@@ -107,6 +116,7 @@ def detalle_restaurante(request, slug):
         'restaurante': restaurante,
         'restaurante_disponible': restaurante_disponible,
     })
+
 
 def agendar_cita(request, slug):
     restaurante = get_object_or_404(Restaurante, slug=slug)
@@ -181,10 +191,10 @@ def agendar_mesa_publico(request, slug):
     })
 
 
-
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 import requests
+
 
 def enviar_confirmacion_whatsapp(request, cita_id):
     cita = get_object_or_404(Cita, id=cita_id)
@@ -210,11 +220,6 @@ def enviar_confirmacion_whatsapp(request, cita_id):
     print("Status:", response.status_code)
     print("Respuesta:", response.json())
     return JsonResponse(response.json())
-
-
-
-
-
 
 
 def confirmacion_agenda(request, cita_id):
@@ -388,8 +393,9 @@ def pedido_rapido(request, slug, numero_mesa):
     })
 
 
-def cambiar_estado_pedido(request, area, pedido_id):
-    pedido = get_object_or_404(Pedido, id=pedido_id, tipo=area)
+def cambiar_estado_pedido(request, slug, area, pedido_id):
+    restaurante = get_object_or_404(Restaurante, slug=slug)
+    pedido = get_object_or_404(Pedido, id=pedido_id, tipo=area, restaurante=restaurante)
 
     if pedido.estado == 'pendiente':
         pedido.estado = 'en_proceso'
@@ -398,23 +404,28 @@ def cambiar_estado_pedido(request, area, pedido_id):
 
     pedido.save()
     messages.success(request, f"Pedido {pedido.id} actualizado a {pedido.estado}")
-    return redirect('dashboard_pedidos', area=area)
+    return redirect('dashboard_pedidos', slug=slug, area=area)
 
 
-@staff_member_required  # opcional, solo para usuarios del staff
-def dashboard_pedidos(request, area):
+@staff_member_required
+def dashboard_pedidos(request, slug, area):
     if area not in ['cocina', 'barra']:
-        return redirect('dashboard_pedidos', area='cocina')
+        return redirect('dashboard_pedidos', slug=slug, area='cocina')
+
+    restaurante = get_object_or_404(Restaurante, slug=slug)
 
     pedidos = Pedido.objects.filter(
         tipo=area,
+        restaurante=restaurante,
         estado__in=['pendiente', 'en_proceso']
     ).order_by('timestamp')
 
     return render(request, 'restaurantes/dashboard.html', {
+        'restaurante': restaurante,
         'area': area,
         'pedidos': pedidos
     })
+
 
 # area para el socio ver sus restaurantes , messas y pedidos
 @login_required
@@ -434,3 +445,58 @@ def mesas_restaurante(request, restaurante_id):
         'pedidos_por_mesa': pedidos_por_mesa
     })
 
+@login_required
+def dashboard_pedidos_cocina(request, slug):
+    restaurante = get_object_or_404(Restaurante, slug=slug)
+    pedidos = Pedido.objects.filter(
+        tipo='cocina',
+        restaurante=restaurante,
+        estado__in=['pendiente', 'en_proceso']
+    ).order_by('timestamp')
+    
+    return render(request, 'restaurantes/dashboard.html', {
+        'restaurante': restaurante,
+        'area': 'cocina',
+        'pedidos': pedidos
+    })
+
+def cambiar_estado_pedido_cocina(request, slug, pedido_id):
+    restaurante = get_object_or_404(Restaurante, slug=slug)
+    pedido = get_object_or_404(Pedido, id=pedido_id, tipo='cocina', restaurante=restaurante)
+
+    if pedido.estado == 'pendiente':
+        pedido.estado = 'en_proceso'
+    elif pedido.estado == 'en_proceso':
+        pedido.estado = 'completado'
+
+    pedido.save()
+    messages.success(request, f"Pedido {pedido.id} actualizado a {pedido.estado}")
+    return redirect('dashboard_pedidos_cocina', slug=slug)
+
+@login_required
+def dashboard_pedidos_barra(request, slug):
+    restaurante = get_object_or_404(Restaurante, slug=slug)
+    pedidos = Pedido.objects.filter(
+        tipo='barra',
+        restaurante=restaurante,
+        estado__in=['pendiente', 'en_proceso']
+    ).order_by('timestamp')
+    
+    return render(request, 'restaurantes/dashboard.html', {
+        'restaurante': restaurante,
+        'area': 'barra',
+        'pedidos': pedidos
+    })
+
+def cambiar_estado_pedido_barra(request, slug, pedido_id):
+    restaurante = get_object_or_404(Restaurante, slug=slug)
+    pedido = get_object_or_404(Pedido, id=pedido_id, tipo='barra', restaurante=restaurante)
+
+    if pedido.estado == 'pendiente':
+        pedido.estado = 'en_proceso'
+    elif pedido.estado == 'en_proceso':
+        pedido.estado = 'completado'
+
+    pedido.save()
+    messages.success(request, f"Pedido {pedido.id} actualizado a {pedido.estado}")
+    return redirect('dashboard_pedidos_barra', slug=slug)

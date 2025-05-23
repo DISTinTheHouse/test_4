@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid container-p-y">
+    <h2 class="mb-5 fuente text-center">📋 Panel de Secciones – {{ restaurante.nombre }}</h2>
+
+    <div class="row gy-4">
+        <!-- Sección Cocina -->
+        <div class="col-12">
+            <div class="card shadow rounded-5 p-4">
+                <div class="card-body text-center">
+                    <h3 class="fuente mb-3">🍳 Sección Cocina</h3>
+                    <p class="fuente-2 mb-4">Accede a todos los pedidos activos de cocina y gestiona su preparación en tiempo real.</p>
+                    <a href="{% url 'dashboard_pedidos_cocina' slug=restaurante.slug %}" class="btn btn-danger btn-lg w-100">
+                        Ir a Cocina
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección Barra -->
+        <div class="col-12">
+            <div class="card shadow rounded-5 p-4">
+                <div class="card-body text-center">
+                    <h3 class="fuente mb-3">🍹 Sección Barra</h3>
+                    <p class="fuente-2 mb-4">Consulta los pedidos de bebidas en tiempo real y mantén el flujo del servicio en la barra.</p>
+                    <a href="{% url 'dashboard_pedidos_barra' slug=restaurante.slug %}" class="btn btn-info btn-lg w-100">
+                        Ir a Barra
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección Hostess (próximamente) -->
+        <div class="col-12">
+            <div class="card shadow rounded-5 p-4">
+                <div class="card-body text-center">
+                    <h3 class="fuente mb-3">🛎️ Sección Hostess</h3>
+                    <p class="fuente-2 mb-4">Aquí podrás confirmar reservaciones, asignar mesas y llevar el control de agendamientos. ¡Muy pronto!</p>
+                    <button class="btn btn-secondary btn-lg w-100" disabled>
+                        Próximamente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

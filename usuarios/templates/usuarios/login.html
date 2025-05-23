@@ -4,41 +4,54 @@
 {% block title %}Iniciar Sesión{% endblock %}
 
 {% block content %}
-<div class="container py-5" style="max-width: 500px;">
+<div class="container-fluid py-5" style="max-width: 500px;">
   <div class="text-center mb-4">
-    <h2 class="fw-bold">🔐 Iniciar Sesión</h2>
-    <p class="text-muted">Accede con tu cuenta de socio.</p>
+    <h2 class="fuente-2 fw-bold mb-2">🔐 Iniciar Sesión</h2>
+    <p class="text-muted fuente">Accede con tu cuenta de socio para gestionar tus restaurantes.</p>
   </div>
 
   <!-- Toast de mensajes -->
   {% if messages %}
     {% for message in messages %}
-      <div class="alert alert-{{ message.tags|default:"info" }} alert-dismissible fade show" role="alert">
+      <div class="alert alert-{{ message.tags|default:"info" }} alert-dismissible fade show text-center fuente" role="alert">
         {{ message }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
       </div>
     {% endfor %}
     <script>
       setTimeout(() => {
-        document.querySelectorAll('.alert').forEach(el => el.classList.remove('show'));
-      }, 7000);
+        document.querySelectorAll('.alert').forEach(el => {
+          el.classList.remove('show'); // animación fade out
+          setTimeout(() => el.remove(), 300); // quita el nodo del DOM después de la transición
+        });
+      }, 4000);
     </script>
   {% endif %}
 
   <!-- Formulario de login -->
-  <div class="card shadow-sm rounded-4 p-4 mt-3">
+  <div class="card shadow-lg rounded-5 p-5 border-0">
     <form method="post" action="">
       {% csrf_token %}
+
       <div class="mb-3">
-        <label for="username" class="form-label">Nombre de usuario</label>
-        <input type="text" name="username" id="username" class="form-control" required autofocus>
+        <label for="username" class="form-label fuente">👤 Nombre de usuario</label>
+        <input type="text" name="username" id="username" class="form-control form-control-lg fuente" required autofocus>
       </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">Contraseña</label>
-        <input type="password" name="password" id="password" class="form-control" required>
+
+      <div class="mb-4">
+        <label for="password" class="form-label fuente">🔒 Contraseña</label>
+        <input type="password" name="password" id="password" class="form-control form-control-lg fuente" required>
       </div>
-      <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">Entrar</button>
+
+      <button type="submit" class="btn btn-dark btn-lg w-100 rounded-4 fw-semibold">
+        🚀 Entrar al sistema
+      </button>
     </form>
+  </div>
+
+  <div class="text-center mt-4">
+    <p class="text-muted fuente mb-0">¿Aún no tienes cuenta?</p>
+    <a href="{% url 'registro' %}" class="fuente">Registrarse aquí</a>
   </div>
 </div>
 {% endblock %}

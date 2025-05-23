@@ -1,20 +1,19 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load custom_tags %}
+
 {% block title %}Mis Restaurantes{% endblock %}
 
 {% block extra_head %}
-<!-- Stripe -->
 <script src="https://js.stripe.com/v3/"></script>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>🍽️ Mis Restaurantes</h1>
-
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h1 class="fuente-2 fw-bold">🍽️ Mis Restaurantes</h1>
         {% if perfil.membresia_activa and restaurantes|length < perfil.cantidad_restaurantes %}
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRestaurante">
+            <button class="btn btn-success btn-lg rounded-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalRestaurante">
                 ➕ Registrar Restaurante
             </button>
         {% endif %}
@@ -22,54 +21,50 @@
 
     {% if messages %}
         {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            <div class="alert alert-{{ message.tags }} text-center fuente-2 shadow-sm">{{ message }}</div>
         {% endfor %}
     {% endif %}
 
-    <div class="mb-3">
-        <strong>Restaurantes registrados:</strong> {{ restaurantes|length }} / {{ perfil.cantidad_restaurantes }}
+    <div class="mb-4 fuente">
+        <strong class="text-muted">Restaurantes registrados:</strong> {{ restaurantes|length }} / {{ perfil.cantidad_restaurantes }}
     </div>
 
     {% if restaurantes %}
-        <div class="row">
+        <div class="row gy-4">
             {% for r in restaurantes %}
                 {% with conteo=conteo_mesas|get_item:r.id %}
-                <div class="col-md-6 mb-4">
-                    <div class="card shadow-sm rounded-4 border-0">
-                        <div class="card-header bg-light d-flex justify-content-between align-items-center rounded-top-4">
-                            <h5 class="mb-0">🍽️ {{ r.nombre }}</h5>
-                            <span class="badge bg-secondary">
-                                ID: {{ r.id }}
-                            </span>
+                <div class="col-md-6">
+                    <div class="card shadow rounded-5 border-0">
+                        <div class="card-header bg-light d-flex justify-content-between align-items-center rounded-top-5">
+                            <h5 class="mb-0 fuente">🍽️ {{ r.nombre }}</h5>
+                            <span class="badge bg-secondary">ID: {{ r.id }}</span>
                         </div>
                         <div class="card-body text-center">
-                            <p class="mb-2 text-muted p-3">
+                            <p class="mb-3 text-muted fuente-2">
                                 {% if r.direccion %}📍 {{ r.direccion }}<br>{% endif %}
                                 {% if r.telefono %}📞 {{ r.telefono }}<br>{% endif %}
                                 🕒 <small>Creado el {{ r.fecha_creacion|date:"d M Y, H:i" }}</small>
                             </p>
 
-                            <hr>
-
                             {% if conteo.total > 0 %}
                                 {% if conteo.disponibles == 0 %}
-                                    <span class="badge bg-danger mb-2">🪑 0/{{ conteo.total }} mesas disponibles</span><br>
+                                    <span class="badge bg-danger mb-3">🪑 0/{{ conteo.total }} mesas disponibles</span><br>
                                 {% elif conteo.disponibles == conteo.total %}
-                                    <span class="badge bg-success mb-2">🪑 Todas las mesas disponibles ({{ conteo.total }})</span><br>
+                                    <span class="badge bg-success mb-3">🪑 Todas disponibles ({{ conteo.total }})</span><br>
                                 {% else %}
-                                    <span class="badge bg-warning text-dark mb-2">🪑 {{ conteo.disponibles }}/{{ conteo.total }} mesas disponibles</span><br>
+                                    <span class="badge bg-warning text-dark mb-3">🪑 {{ conteo.disponibles }}/{{ conteo.total }} disponibles</span><br>
                                 {% endif %}
                             {% else %}
-                                <span class="text-muted">Aún sin mesas registradas</span><br>
+                                <span class="text-muted fuente-2">Aún sin mesas registradas</span><br>
                             {% endif %}
 
                             <div class="mt-3 d-flex gap-2">
-                                <a href="{% url 'configurar_restaurante' slug=r.slug %}" class="btn btn-outline-dark btn-sm w-50">
-                                    ⚙️ Configurar
-                                </a>
-                                <a href="{% url 'mesas_restaurante' restaurante_id=r.id %}" class="btn btn-primary btn-sm w-50">
-                                    🪑 Ver Mesas
-                                </a>
+                                <a href="{% url 'configurar_restaurante' slug=r.slug %}" class="btn btn-outline-dark btn-sm w-50">⚙️ Configurar</a>
+                                <a href="{% url 'mesas_restaurante' restaurante_id=r.id %}" class="btn btn-primary btn-sm w-50">🪑 Ver Mesas</a>
+                            </div>
+
+                            <div class="mt-3">
+                                <a href="{% url 'dashboard' slug=r.slug %}" class="btn btn-outline-primary btn-sm w-100 mt-2">📊 Ver Panel de Secciones</a>
                             </div>
                         </div>
                     </div>
@@ -78,14 +73,14 @@
             {% endfor %}
         </div>
     {% else %}
-        <div class="alert alert-info">No tienes restaurantes registrados aún.</div>
+        <div class="alert alert-info text-center fuente">No tienes restaurantes registrados aún.</div>
     {% endif %}
 
     {% if perfil.membresia_activa and restaurantes|length >= perfil.cantidad_restaurantes %}
-        <div class="alert alert-warning mt-4">
-            Ya alcanzaste el límite de restaurantes por membresía.<br>
-            ¿Quieres agregar otro?
-            <button type="button" class="btn btn-success mt-2" data-bs-toggle="modal" data-bs-target="#modalPagoRestaurante">
+        <div class="alert alert-warning mt-5 rounded-4 p-4 shadow-sm text-center">
+            <p class="mb-3 fuente">Ya alcanzaste el límite de restaurantes por membresía.</p>
+            <p class="mb-3 fuente-2">Puedes agregar otro restaurante pagando una tarifa adicional.</p>
+            <button type="button" class="btn btn-success btn-lg px-4" data-bs-toggle="modal" data-bs-target="#modalPagoRestaurante">
                 ➕ Pagar Restaurante Extra ($400)
             </button>
         </div>
@@ -93,19 +88,19 @@
         <!-- Modal Stripe -->
         <div class="modal fade" id="modalPagoRestaurante" tabindex="-1" aria-labelledby="modalPagoRestauranteLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
+                <div class="modal-content rounded-4">
                     <form id="payment-form-restaurante">
                         {% csrf_token %}
                         <div class="modal-header">
-                            <h5 class="modal-title">Pagar Restaurante Extra</h5>
+                            <h5 class="modal-title">💳 Pagar Restaurante Extra</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                         </div>
                         <div class="modal-body">
                             <div id="card-element-restaurante" class="form-control mb-3"></div>
-                            <div id="card-errors-restaurante" class="text-danger"></div>
+                            <div id="card-errors-restaurante" class="text-danger fuente-2"></div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary w-100">Pagar $400</button>
+                            <button type="submit" class="btn btn-primary w-100">Confirmar Pago de $400</button>
                         </div>
                     </form>
                 </div>
@@ -113,28 +108,27 @@
         </div>
     {% endif %}
 
-    <!-- Modal para registrar restaurante -->
     {% if perfil.membresia_activa and restaurantes|length < perfil.cantidad_restaurantes %}
     <div class="modal fade" id="modalRestaurante" tabindex="-1" aria-labelledby="modalRestauranteLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal-content rounded-4">
                 <form method="post">
                     {% csrf_token %}
                     <div class="modal-header">
-                        <h5 class="modal-title" id="modalRestauranteLabel">Registrar Restaurante</h5>
+                        <h5 class="modal-title">➕ Registrar Nuevo Restaurante</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label>Nombre</label>
+                            <label class="form-label fuente">Nombre</label>
                             <input type="text" name="nombre" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label>Dirección</label>
+                            <label class="form-label fuente">Dirección</label>
                             <input type="text" name="direccion" class="form-control">
                         </div>
                         <div class="mb-3">
-                            <label>Teléfono</label>
+                            <label class="form-label fuente">Teléfono</label>
                             <input type="text" name="telefono" class="form-control">
                         </div>
                     </div>
@@ -147,7 +141,6 @@
     </div>
     {% endif %}
 
-    <!-- Stripe Elements Script -->
     <script>
         const stripeRestaurante = Stripe("{{ STRIPE_PUBLIC_KEY }}");
         const elementsRestaurante = stripeRestaurante.elements();

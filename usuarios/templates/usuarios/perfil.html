@@ -9,44 +9,57 @@
 {% block title %}Mi Perfil{% endblock %}
 
 {% block content %}
-<!-- Mensajes -->
-{% if messages %}
-<div class="container-fluid mt-3 px-4">
-  {% for message in messages %}
-    <div class="alert alert-{{ message.tags|default:"info" }} alert-dismissible fade show" role="alert">
-      {{ message }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-    </div>
-  {% endfor %}
-  <script>
-    setTimeout(() => {
-      document.querySelectorAll('.alert').forEach(el => el.classList.remove('show'));
-    }, 7000);
-  </script>
-</div>
-{% endif %}
-
+<style>
+  body {
+    background-color: white;
+  }
+</style>
 <!-- Contenido -->
 <div class="container py-5">
   <div class="text-center mb-5">
-    <h1 class="fw-bold">👋 ¡Hola, {{ request.user.username }}!</h1>
-    <p class="text-muted">Aquí puedes administrar tu cuenta y acceder a tus restaurantes registrados.</p>
+    <h1 class="fuente fw-bold display-5 mb-3">👋 ¡Hola, {{ request.user.username }}!</h1>
+    <p class="text-muted fuente fs-5">Administra tu cuenta y accede a tus restaurantes registrados desde aquí.</p>
   </div>
+
+<!-- Mensajes -->
+{% if messages %}
+  <div class="container-fluid mt-4 px-4">
+    <div id="mensajes-toast">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:"info" }} alert-dismissible fade show text-center fuente mb-3" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <script>
+    setTimeout(() => {
+      document.querySelectorAll('#mensajes-toast .alert').forEach(el => {
+        el.classList.remove('show');
+        setTimeout(() => el.remove(), 300);
+      });
+    }, 5000);
+  </script>
+{% endif %}
 
   {% if request.user.perfil.membresia_activa %}
     <div class="text-center">
-      <div class="alert alert-success rounded-4 p-4 shadow-sm mx-auto" style="max-width: 600px;">
-        <h4 class="mb-3">👑 Membresía Activa</h4>
-        <p class="mb-3">Tienes acceso completo a las herramientas de administración de restaurantes.</p>
-        <a href="{% url 'mis_restaurantes' %}" class="btn btn-outline-primary btn-lg px-4">📋 Ver Mis Restaurantes</a>
+      <div class="alert alert-success rounded-5 p-5 shadow-sm mx-auto" style="max-width: 650px;">
+        <h4 class="fuente fw-bold mb-3 fs-3">👑 Membresía Activa</h4>
+        <p class="fuente fs-5 mb-4">Tienes acceso completo a todas las herramientas de administración.</p>
+        <a href="{% url 'mis_restaurantes' %}" class="btn btn-success btn-lg px-4 rounded-4 fuente">
+          📋 Ver Mis Restaurantes
+        </a>
       </div>
     </div>
   {% else %}
     <div class="text-center">
-      <div class="alert alert-warning rounded-4 p-4 shadow-sm mx-auto" style="max-width: 600px;">
-        <h4 class="mb-3">⚠️ Membresía Inactiva</h4>
-        <p class="mb-3">Para registrar restaurantes y empezar a recibir pedidos, activa tu membresía.</p>
-        <button type="button" class="btn btn-success btn-lg px-4" data-bs-toggle="modal" data-bs-target="#checkoutModal">
+      <div class="alert alert-warning rounded-5 p-5 shadow-sm mx-auto" style="max-width: 650px;">
+        <h4 class="fuente fw-bold mb-3 fs-3">⚠️ Membresía Inactiva</h4>
+        <p class="fuente fs-5 mb-4">Activa tu membresía para registrar restaurantes y recibir pedidos.</p>
+        <button type="button" class="btn btn-success btn-lg px-4 rounded-4 fuente" data-bs-toggle="modal" data-bs-target="#checkoutModal">
           💳 Activar Membresía
         </button>
       </div>

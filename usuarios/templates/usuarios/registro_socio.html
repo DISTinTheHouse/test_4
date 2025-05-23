@@ -4,49 +4,142 @@
 {% block content %}
 <div class="container py-5" style="max-width: 600px;">
   <div class="text-center mb-4">
-    <h2 class="fw-bold">🧾 Registro de Socios</h2>
-    <p class="text-muted">Crea tu cuenta para acceder a los beneficios exclusivos.</p>
+    <h2 class="fuente-2 fw-bold mb-2">🧾 Registro de Socios</h2>
+    <p class="text-muted fuente fs-5">Crea tu cuenta para acceder a los beneficios exclusivos del sistema.</p>
   </div>
 
-  <!-- Toasts sin if -->
+  <!-- Toasts -->
   {% if messages %}
-  {% for message in messages %}
-    <div class="alert alert-danger alert-{{ message.tags|default:"info" }} alert-dismissible fade show" role="alert">
-      {{ message }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-    </div>
-  {% endfor %}
-  <script>
-    setTimeout(() => {
-      document.querySelectorAll('.alert').forEach(el => el.classList.remove('show'));
-    }, 7000);
-  </script>
-{% endif %}
-
-
+    {% for message in messages %}
+      <div class="alert alert-danger alert-{{ message.tags|default:"info" }} alert-dismissible fade show text-center fuente" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+    {% endfor %}
+    <script>
+      setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(el => {
+          el.classList.remove('show');
+          setTimeout(() => el.remove(), 300);
+        });
+      }, 5000);
+    </script>
+  {% endif %}
 
   <!-- Formulario -->
-  <div class="card shadow-sm rounded-4 p-4 mt-3">
+  <div class="card shadow-lg rounded-5 p-5 border-0">
     <form method="post" action="">
       {% csrf_token %}
+
       <div class="mb-3">
-        <label class="form-label">Nombre de usuario</label>
-        <input type="text" name="username" class="form-control" required>
+        <label class="form-label fuente">👤 Nombre de usuario</label>
+        <input type="text" name="username" class="form-control form-control-lg fuente" required>
       </div>
+
       <div class="mb-3">
-        <label class="form-label">Correo electrónico</label>
-        <input type="email" name="email" class="form-control" required>
+        <label class="form-label fuente">📧 Correo electrónico</label>
+        <input type="email" name="email" class="form-control form-control-lg fuente" required>
       </div>
+
       <div class="mb-3">
-        <label class="form-label">Contraseña</label>
-        <input type="password" name="password" class="form-control" required>
+        <label class="form-label fuente">🔒 Contraseña</label>
+        <input type="password" name="password" id="password1" class="form-control form-control-lg fuente" required>
+
+        <div class="mt-2">
+          <div class="progress rounded-3" style="height: 8px;">
+            <div id="password-strength-bar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+          </div>
+          <small id="password-strength-text" class="text-muted fuente-2 d-block mt-2 text-start"></small>
+        </div>
       </div>
+
       <div class="mb-4">
-        <label class="form-label">Confirmar contraseña</label>
-        <input type="password" name="password2" class="form-control" required>
+        <label class="form-label fuente">🔒 Confirmar contraseña</label>
+        <input type="password" name="password2" id="password2" class="form-control form-control-lg fuente" required>
+        <div class="invalid-feedback fuente-2">
+          Las contraseñas no coinciden.
+        </div>
+        <div class="valid-feedback fuente-2">
+          ✅ Contraseñas coinciden.
+        </div>
       </div>
-      <button type="submit" class="btn btn-success w-100 py-2 fw-semibold">Crear cuenta</button>
+
+      <button type="submit" class="btn btn-success btn-lg w-100 rounded-4 fuente" id="submit-btn">
+        ✅ Crear cuenta
+      </button>
     </form>
   </div>
+
+  <div class="text-center mt-4">
+    <p class="text-muted fuente mb-0">¿Ya tienes cuenta?</p>
+    <a href="{% url 'login' %}" class="fuente">Iniciar sesión aquí</a>
+  </div>
 </div>
+
+<!-- Script de validación -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const pass1 = document.getElementById('password1');
+    const pass2 = document.getElementById('password2');
+    const submitBtn = document.getElementById('submit-btn');
+    const bar = document.getElementById('password-strength-bar');
+    const text = document.getElementById('password-strength-text');
+
+    function validarPassword() {
+      const val1 = pass1.value;
+      const val2 = pass2.value;
+
+      // Verificar coincidencia
+      if (val1 && val2) {
+        if (val1 === val2) {
+          pass2.classList.remove('is-invalid');
+          pass2.classList.add('is-valid');
+          submitBtn.disabled = false;
+        } else {
+          pass2.classList.remove('is-valid');
+          pass2.classList.add('is-invalid');
+          submitBtn.disabled = true;
+        }
+      } else {
+        pass2.classList.remove('is-valid', 'is-invalid');
+        submitBtn.disabled = true;
+      }
+
+      // Medir fuerza
+      evaluarFuerza(val1);
+    }
+
+    function evaluarFuerza(password) {
+      let fuerza = 0;
+      if (password.length >= 8) fuerza++;
+      if (/[a-z]/.test(password)) fuerza++;
+      if (/[A-Z]/.test(password)) fuerza++;
+      if (/[0-9]/.test(password)) fuerza++;
+      if (/[\W]/.test(password)) fuerza++;
+
+      let width = fuerza * 20;
+      bar.style.width = width + '%';
+
+      if (fuerza <= 2) {
+        bar.className = 'progress-bar bg-danger';
+        text.textContent = 'Contraseña débil';
+      } else if (fuerza <= 4) {
+        bar.className = 'progress-bar bg-warning';
+        text.textContent = 'Contraseña aceptable';
+      } else {
+        bar.className = 'progress-bar bg-success';
+        text.textContent = 'Contraseña fuerte';
+      }
+
+      if (!password) {
+        bar.style.width = '0%';
+        text.textContent = '';
+      }
+    }
+
+    pass1.addEventListener('input', validarPassword);
+    pass2.addEventListener('input', validarPassword);
+  });
+</script>
+
 {% endblock %}
