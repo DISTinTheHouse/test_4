@@ -1,51 +1,51 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container-fluid flex-grow-1 container-p-y">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
 
-            <!-- Card principal del Restaurante -->
-            <div class="card shadow-lg rounded-4">
-                <div class="card-header text-center bg-primary text-white">
-                    <h1 class="display-4 mb-2">{{ restaurante.nombre }}</h1>
-                    <p class="lead">{{ restaurante.direccion|default:"Sin dirección" }}</p>
-                </div>
+      <!-- Card del Restaurante -->
+      <div class="card shadow-lg rounded-5 border-0 overflow-hidden">
 
-                <!-- Cuerpo de la Card -->
-                <div class="card-body text-center">
-                    <img src="#" class="img-fluid rounded mb-4" alt="{{ restaurante.nombre }}" style="max-height: 300px; object-fit: cover;">
+        <!-- Encabezado -->
+        <div class="bg-dark text-white text-center p-5">
+          <h1 class="fuente-2 display-5 fw-bold mb-2 text-success">{{ restaurante.nombre }}</h1>
+          <p class="fs-5 fuente">{{ restaurante.direccion|default:"Sin dirección disponible" }}</p>
+        </div>
 
-                    <p class="text-muted mb-4">
-                        {% if restaurante.telefono %}
-                            <i class="bx bx-phone"></i> {{ restaurante.telefono }}<br>
-                        {% endif %}
-                    </p>
+        <!-- Cuerpo -->
+        <div class="card-body text-center py-5 px-4">
 
-                    <!-- Mensaje de disponibilidad para agendar -->
-                    <div class="mb-4">
-                        {% if restaurante_disponible %}
-                            <p class="lead text-success">¡El restaurante está disponible para agendar tu mesa!</p>
-                            <a href="{% url 'agendar_cita' restaurante.slug %}" class="btn btn-primary btn-lg">
-                                📅 Agendar ahora
-                            </a>
-                        {% else %}
-                            <p class="lead text-danger">Lo sentimos, no hay mesas disponibles para agendar en este momento.</p>
-                            <a href="#" class="btn btn-secondary btn-lg disabled">
-                                🚧 Función de pedidos en construcción
-                            </a>
-                        {% endif %}
-                    </div>
+          <img src="#" alt="{{ restaurante.nombre }}" class="img-fluid rounded mb-4" style="max-height: 300px; object-fit: cover; width: 100%;">
 
-                    <!-- Información adicional del restaurante -->
-                    <hr>
-                    <p class="text-muted">
-                        Restaurante registrado el {{ restaurante.fecha_creacion|date:"d M Y, H:i" }}
-                    </p>
-                </div>
-            </div>
+          {% if restaurante.telefono %}
+            <p class="text-muted fuente fs-5 mb-4">
+              <i class="bx bx-phone"></i> {{ restaurante.telefono }}
+            </p>
+          {% endif %}
+
+          {% if restaurante_disponible %}
+            <p class="text-success fuente fs-5 mb-3">✅ ¡Este restaurante tiene mesas disponibles para reservar!</p>
+            <a href="{% url 'agendar_cita' restaurante.slug %}" class="btn btn-lg btn-outline-success px-4 rounded-4 fuente">
+              📅 Agendar ahora
+            </a>
+          {% else %}
+            <p class="text-danger fuente fs-5 mb-3">🚫 No hay mesas disponibles en este momento.</p>
+            <button class="btn btn-lg btn-secondary px-4 rounded-4 fuente" disabled>
+              🚧 Pedidos en construcción
+            </button>
+          {% endif %}
+
+          <hr class="my-5">
+
+          <p class="text-muted fuente">Restaurante registrado el <strong>{{ restaurante.fecha_creacion|date:"d M Y, H:i" }}</strong></p>
 
         </div>
+
+      </div>
+
     </div>
+  </div>
 </div>
 {% endblock %}

@@ -3,37 +3,39 @@
 {% block title %}Reservar Mesa - {{ restaurante.nombre }}{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <div class="card shadow-lg p-4">
-    <h2 class="mb-4 text-center">📅 Reservar mesa en <strong>{{ restaurante.nombre }}</strong></h2>
-    <p class="text-muted mb-4 text-center">Llena tus datos y selecciona una mesa disponible para agendar tu visita. Asegúrate de verificar la fecha y hora.</p>
+<div class="container py-5" style="max-width: 720px;">
+  <div class="text-center mb-4">
+    <h2 class="fuente-2 fw-bold mb-2">📅 Reservar en <span class="text-primary">{{ restaurante.nombre }}</span></h2>
+    <p class="text-muted fuente fs-5">Llena tus datos para agendar tu visita. Asegúrate de elegir fecha, hora y una mesa disponible.</p>
+  </div>
 
-    <form method="POST" class="row g-3">
+  <div class="card shadow-lg rounded-5 p-5 border-0">
+    <form method="POST" class="row g-4">
       {% csrf_token %}
 
       <div class="col-md-6">
-        <label for="nombre" class="form-label">Nombre completo</label>
-        <input type="text" name="nombre" class="form-control" placeholder="Ej. Juan Pérez" required>
+        <label for="nombre" class="form-label fuente">👤 Nombre completo</label>
+        <input type="text" name="nombre" class="form-control form-control-lg fuente" placeholder="Ej. Juan Pérez" required>
       </div>
 
       <div class="col-md-6">
-        <label for="telefono" class="form-label">Teléfono</label>
-        <input type="text" name="telefono" class="form-control" placeholder="Ej. 55-1234-5678" required>
+        <label for="telefono" class="form-label fuente">📞 Teléfono</label>
+        <input type="text" name="telefono" class="form-control form-control-lg fuente" placeholder="Ej. 55-1234-5678" required>
       </div>
 
       <div class="col-md-6">
-        <label for="fecha" class="form-label">Fecha</label>
-        <input type="date" name="fecha" class="form-control" required>
+        <label for="fecha" class="form-label fuente">📆 Fecha</label>
+        <input type="date" name="fecha" class="form-control form-control-lg fuente" required>
       </div>
 
       <div class="col-md-6">
-        <label for="hora" class="form-label">Hora</label>
-        <input type="time" name="hora" class="form-control" required>
+        <label for="hora" class="form-label fuente">🕒 Hora</label>
+        <input type="time" name="hora" class="form-control form-control-lg fuente" required>
       </div>
 
       <div class="col-12">
-        <label for="mesa_id" class="form-label">Selecciona una mesa disponible</label>
-        <select name="mesa_id" class="form-select" required>
+        <label for="mesa_id" class="form-label fuente">🪑 Selecciona una mesa</label>
+        <select name="mesa_id" class="form-select form-select-lg fuente" required>
           {% for mesa in mesas %}
             <option value="{{ mesa.id }}">Mesa {{ mesa.numero_mesa }} (Capacidad: {{ mesa.capacidad }})</option>
           {% endfor %}
@@ -41,7 +43,9 @@
       </div>
 
       <div class="col-12 text-center mt-4">
-        <button type="submit" class="btn btn-primary btn-lg">✅ Confirmar Reserva</button>
+        <button type="submit" class="btn btn-success btn-lg w-100 rounded-4 fuente fw-semibold">
+          ✅ Confirmar Reserva
+        </button>
       </div>
     </form>
   </div>

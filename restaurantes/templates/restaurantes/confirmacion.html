@@ -3,49 +3,47 @@
 {% block title %}Confirmación de Reserva{% endblock %}
 
 {% block content %}
-<div class="container-fluid mt-5 p-4">
-  <div class="card shadow-lg border-0 p-5">
-    <div class="text-center">
-      <h2 class="text-success fw-bold mb-3">✅ ¡Tu reservación fue exitosa!</h2>
-      <p class="text-muted">Aquí tienes los detalles de tu cita. Guárdalos o mándalos por WhatsApp por si las dudas:</p>
+<div class="container py-5" style="max-width: 700px;">
+  <div class="card shadow-lg rounded-5 p-5 border-0">
+    <div class="text-center mb-4">
+      <h2 class="text-success fuente-2 fw-bold mb-2">✅ ¡Reserva Confirmada!</h2>
+      <p class="text-muted fuente fs-5">Gracias por reservar con nosotros. Aquí tienes los detalles de tu cita:</p>
     </div>
 
-    <ul class="list-group list-group-flush my-4">
-      <li class="list-group-item"><strong>🏨 Restaurante:</strong> {{ cita.restaurante.nombre }}</li>
-      <li class="list-group-item"><strong>📍 Dirección:</strong> {{ cita.restaurante.direccion }}</li>
-      <li class="list-group-item"><strong>🙋 Cliente:</strong> {{ cita.nombre_cliente }}</li>
-      <li class="list-group-item"><strong>📞 Teléfono:</strong> {{ cita.telefono }}</li>
-      <li class="list-group-item"><strong>🪑 Mesa:</strong> {{ cita.mesa.numero_mesa }}</li>
-      <li class="list-group-item"><strong>📅 Fecha:</strong> {{ cita.fecha }}</li>
-      <li class="list-group-item"><strong>⏰ Hora:</strong> {{ cita.hora }}</li>
+    <ul class="list-group list-group-flush mb-4">
+      <li class="list-group-item fuente py-3"><strong>🏨 Restaurante:</strong> {{ cita.restaurante.nombre }}</li>
+      <li class="list-group-item fuente py-3"><strong>📍 Dirección:</strong> {{ cita.restaurante.direccion }}</li>
+      <li class="list-group-item fuente py-3"><strong>🙋 Cliente:</strong> {{ cita.nombre_cliente }}</li>
+      <li class="list-group-item fuente py-3"><strong>📞 Teléfono:</strong> {{ cita.telefono }}</li>
+      <li class="list-group-item fuente py-3"><strong>🪑 Mesa:</strong> {{ cita.mesa.numero_mesa }}</li>
+      <li class="list-group-item fuente py-3"><strong>📅 Fecha:</strong> {{ cita.fecha }}</li>
+      <li class="list-group-item fuente py-3"><strong>⏰ Hora:</strong> {{ cita.hora }}</li>
     </ul>
 
-    <div class="text-center mt-4">
-      <a href="{% url 'detalle_restaurante' cita.restaurante.slug %}" class="btn btn-outline-primary me-2">
-        🔙 Volver al restaurante
+    <div class="text-center mt-4 d-flex flex-column flex-sm-row justify-content-center gap-3">
+      <a href="{% url 'landing' %}" class="btn btn-dark btn-lg rounded-4 fuente px-4">
+        🔙 Volver al Inicio
       </a>
 
-      <button id="btn-whatsapp" class="btn btn-success">
-        📲 Enviar confirmación por WhatsApp
+      <button id="btn-whatsapp" class="btn btn-success btn-lg rounded-4 fuente px-4">
+        📲 Enviar por WhatsApp
       </button>
-
-      <script>
-        document.getElementById('btn-whatsapp').addEventListener('click', function () {
-          fetch("{% url 'enviar_whatsapp' cita.id %}")
-            .then(response => response.json())
-            .then(data => {
-              console.log(data);
-              alert("Mensaje enviado por WhatsApp ✅");
-            })
-            .catch(error => {
-              console.error(error);
-              alert("Error al enviar mensaje ❌");
-            });
-        });
-      </script>
-
-
     </div>
+
+    <script>
+      document.getElementById('btn-whatsapp').addEventListener('click', function () {
+        fetch("{% url 'enviar_whatsapp' cita.id %}")
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+            alert("📩 Confirmación enviada por WhatsApp ✅");
+          })
+          .catch(error => {
+            console.error(error);
+            alert("⚠️ Hubo un problema al enviar el mensaje.");
+          });
+      });
+    </script>
   </div>
 </div>
 {% endblock %}
