@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Error del servidor (500){% endblock %}
+
+{% block content %}
+<style>
+  .error-container {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    animation: fadeIn 0.8s ease-in-out;
+  }
+
+  .error-code {
+    font-size: 7rem;
+    font-weight: 800;
+    color: #ff5722;
+    animation: flicker 2s infinite;
+  }
+
+  .error-message {
+    font-size: 1.5rem;
+    color: #444;
+    margin-bottom: 1rem;
+  }
+
+  .btn-retry {
+    background-color: #dc3545;
+    color: white;
+    font-weight: 600;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .btn-retry:hover {
+    background-color: #b02a37;
+  }
+
+  .text-glitch {
+    font-size: 1.2rem;
+    color: #888;
+    text-shadow: 1px 1px 0 #999, -1px -1px 0 #ccc;
+  }
+
+  @keyframes flicker {
+    0%, 100% { opacity: 1; }
+    45% { opacity: 0.8; }
+    55% { opacity: 0.6; }
+    65% { opacity: 0.9; }
+    75% { opacity: 0.4; }
+    85% { opacity: 1; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<div class="error-container">
+  <div class="error-code">500</div>
+  <p class="error-message fuente-2">¡Uy! Algo salió mal en nuestro servidor.</p>
+  <p class="text-glitch fuente">Nuestro equipo de cocineros digitales ya está revisando el horno... 🍳</p>
+
+  <div class="mt-4 d-flex flex-column align-items-center gap-3">
+    <a href="{% url 'landing' %}" class="btn-retry">
+      🔁 Intentar de nuevo
+    </a>
+
+    <button class="btn btn-outline-secondary btn-sm rounded-3 px-4" disabled>
+      🛠️ Reportar problema
+    </button>
+    <span class="text-muted fuente-2 small">Próximamente podrás reportar errores en tiempo real.</span>
+  </div>
+
+  <img src="{% static 'img/sin-mesero-png.png' %}" alt="Sin Mesero" class="img-fluid mt-5" style="max-height: 180px;">
+</div>
+{% endblock %}

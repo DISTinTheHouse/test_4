@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Página no encontrada (404){% endblock %}
+
+{% block content %}
+<style>
+  .error-container {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+  }
+
+  .error-code {
+    font-size: 8rem;
+    font-weight: bold;
+    color: #dc3545;
+    animation: pulse 1.5s infinite;
+  }
+
+  .error-message {
+    font-size: 1.5rem;
+    color: #555;
+  }
+
+  .btn-ghost {
+    border: 2px solid #000;
+    background-color: transparent;
+    transition: all 0.3s ease;
+  }
+
+  .btn-ghost:hover {
+    background-color: #000;
+    color: #fff;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .coming-soon {
+    font-size: 0.9rem;
+    color: #6c757d;
+  }
+</style>
+
+<div class="error-container">
+  <div class="error-code">404</div>
+  <p class="error-message fuente-2 mb-4">Oops... La página que buscas no existe o fue movida.</p>
+
+  <div class="d-flex flex-column gap-3 align-items-center">
+    <a href="{% url 'landing' %}" class="btn btn-dark btn-lg px-5 rounded-4">
+      🔙 Volver al Inicio
+    </a>
+
+    <button class="btn btn-outline-secondary btn-sm px-4 rounded-4" disabled>
+      🛠️ Reportar este error
+    </button>
+    <span class="coming-soon">Funcionalidad próximamente disponible</span>
+  </div>
+
+  <img src="{% static 'img/sin-mesero-png.png' %}" alt="Sin Mesero" class="img-fluid mt-5" style="max-height: 200px;">
+</div>
+{% endblock %}
