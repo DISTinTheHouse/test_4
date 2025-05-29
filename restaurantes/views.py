@@ -263,6 +263,7 @@ def confirmacion_agenda(request, cita_id):
 
 
 # para los socios y configuración
+@login_required
 def configurar_restaurante(request, slug):
     restaurante = get_object_or_404(Restaurante, slug=slug)
 
@@ -271,68 +272,56 @@ def configurar_restaurante(request, slug):
         return redirect('restaurantes_socio')  # Redirigir si no es el socio
 
     if request.method == 'POST':
-        # Configuración de mesas
-        if 'add_mesa' in request.POST:
-            numero_mesa = int(request.POST.get('numero_mesa'))
-            capacidad = int(request.POST.get('capacidad'))
-            descripcion = request.POST.get('descripcion', '')
+        try:
+            if 'add_mesa' in request.POST:
+                Mesa.objects.create(
+                    restaurante=restaurante,
+                    numero_mesa=int(request.POST['numero_mesa']),
+                    capacidad=int(request.POST['capacidad']),
+                    descripcion=request.POST.get('descripcion', '')
+                )
+                messages.success(request, "✅ Mesa agregada correctamente.")
 
-            Mesa.objects.create(
-                restaurante=restaurante,
-                numero_mesa=numero_mesa,
-                capacidad=capacidad,
-                descripcion=descripcion
-            )
+            elif 'add_barra' in request.POST:
+                Barra.objects.create(
+                    restaurante=restaurante,
+                    numero_barra=int(request.POST['numero_barra']),
+                    capacidad=int(request.POST['capacidad'])
+                )
+                messages.success(request, "✅ Barra agregada correctamente.")
 
-        # Configuración de barras
-        if 'add_barra' in request.POST:
-            numero_barra = int(request.POST.get('numero_barra'))
-            capacidad = int(request.POST.get('capacidad'))
-            Barra.objects.create(
-                restaurante=restaurante,
-                numero_barra=numero_barra,
-                capacidad=capacidad,
-            )
+            elif 'add_platillo' in request.POST:
+                Platillo.objects.create(
+                    restaurante=restaurante,
+                    nombre=request.POST['nombre_platillo'],
+                    descripcion=request.POST.get('descripcion_platillo', ''),
+                    precio=float(request.POST['precio_platillo'])
+                )
+                messages.success(request, "✅ Platillo agregado correctamente.")
 
-        # Configuración de platillos
-        if 'add_platillo' in request.POST:
-            nombre = request.POST.get('nombre_platillo')
-            descripcion = request.POST.get('descripcion_platillo', '')
-            precio = float(request.POST.get('precio_platillo'))
-            Platillo.objects.create(
-                restaurante=restaurante,
-                nombre=nombre,
-                descripcion=descripcion,
-                precio=precio
-            )
+            elif 'add_bebida' in request.POST:
+                Bebida.objects.create(
+                    restaurante=restaurante,
+                    nombre=request.POST['nombre_bebida'],
+                    descripcion=request.POST.get('descripcion_bebida', ''),
+                    precio=float(request.POST['precio_bebida'])
+                )
+                messages.success(request, "✅ Bebida agregada correctamente.")
 
-        # Configuración de bebidas
-        if 'add_bebida' in request.POST:
-            nombre = request.POST.get('nombre_bebida')
-            descripcion = request.POST.get('descripcion_bebida', '')
-            precio = float(request.POST.get('precio_bebida'))
-            Bebida.objects.create(
-                restaurante=restaurante,
-                nombre=nombre,
-                descripcion=descripcion,
-                precio=precio
-            )
+        except Exception as e:
+            messages.error(request, f"❌ Ocurrió un error al guardar los datos. Verifica los campos.")
 
-        # Redirigir después de guardar la configuración
         return redirect('configurar_restaurante', slug=restaurante.slug)
 
-    # Mostrar la configuración del restaurante
-    mesas = Mesa.objects.filter(restaurante=restaurante)
-    barras = Barra.objects.filter(restaurante=restaurante)
-    platillos = Platillo.objects.filter(restaurante=restaurante)
-    bebidas = Bebida.objects.filter(restaurante=restaurante)
-
+    # Mostrar la configuración actual
+    secciones = ['mesas', 'barras', 'platillos', 'bebidas']
     return render(request, 'restaurantes/configurar_restaurante.html', {
         'restaurante': restaurante,
-        'mesas': mesas,
-        'barras': barras,
-        'platillos': platillos,
-        'bebidas': bebidas
+        'mesas': Mesa.objects.filter(restaurante=restaurante),
+        'barras': Barra.objects.filter(restaurante=restaurante),
+        'platillos': Platillo.objects.filter(restaurante=restaurante),
+        'bebidas': Bebida.objects.filter(restaurante=restaurante),
+        'secciones': secciones,
     })
 
 

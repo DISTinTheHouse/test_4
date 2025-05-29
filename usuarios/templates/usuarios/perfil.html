@@ -54,6 +54,20 @@
         </a>
       </div>
     </div>
+    {% if fecha_pago %}
+      <div class="text-center mt-4">
+        <p class="fuente fs-5 text-muted">
+          💰 Pagaste el: <strong>{{ fecha_pago|date:"d M Y, H:i" }}</strong>
+        </p>
+      </div>
+    {% endif %}
+    {% if fecha_expiracion %}
+      <div class="text-center">
+        <p class="fuente fs-5 text-muted">
+          ⏳ Expira el: <strong>{{ fecha_expiracion|date:"d M Y, H:i" }}</strong>
+        </p>
+      </div>
+    {% endif %}
   {% else %}
     <div class="text-center">
       <div class="alert alert-warning rounded-5 p-5 shadow-sm mx-auto" style="max-width: 650px;">
@@ -64,6 +78,13 @@
         </button>
       </div>
     </div>
+    {% if fecha_expiracion %}
+      <div class="text-center mt-4">
+        <p class="fuente fs-5">
+          Tu membresía expiró el: <strong>{{ fecha_expiracion|date:"d M Y, H:i" }}</strong>.
+        </p>
+      </div>
+    {% endif %}
   {% endif %}
 </div>
 

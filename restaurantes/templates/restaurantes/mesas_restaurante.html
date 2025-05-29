@@ -1,54 +1,53 @@
 {% extends 'base.html' %}
-
 {% block content %}
+{% load custom_tags %}
+
 <div class="container py-4">
-    <h2 class="mb-4">🍽️ Mesas de {{ restaurante.nombre }}</h2>
+    <h2 class="mb-4 fuente-2">🪑 Mesas de <strong>{{ restaurante.nombre }}</strong></h2>
 
     <div class="row">
         {% for mesa in mesas %}
             <div class="col-md-4 mb-4">
-                <div class="card shadow-sm rounded-4 border-{% if mesa.disponibilidad %}success{% else %}danger{% endif %}">
+                <div class="card shadow-sm rounded-4 border border-{% if mesa.disponibilidad %}success{% else %}danger{% endif %}">
                     <div class="card-body">
-                        <h5 class="card-title">🪑 Mesa {{ mesa.numero_mesa }}</h5>
-                        <p>
-                            Estado:
+                        <h5 class="card-title fuente">Mesa {{ mesa.numero_mesa }}</h5>
+
+                        <p class="mb-2 fuente">
                             <span class="badge bg-{% if mesa.disponibilidad %}success{% else %}danger{% endif %}">
-                                {% if mesa.disponibilidad %}Disponible{% else %}Ocupada{% endif %}
-                            </span><br>
-                            Capacidad: {{ mesa.capacidad|default:"No especificada" }}<br>
+                                {% if mesa.disponibilidad %}✅ Disponible{% else %}❌ Ocupada{% endif %}
+                            </span>
+                            <br>
+                            <strong>Capacidad:</strong> {{ mesa.capacidad|default:"No especificada" }} personas<br>
                             {% if mesa.descripcion %}
-                                <small class="text-muted">{{ mesa.descripcion }}</small><br>
+                                <small class="text-muted fuente">{{ mesa.descripcion }}</small><br>
                             {% endif %}
                         </p>
 
-                        <hr>
-
-                        <!-- Botón para mostrar QR -->
-                        <button class="btn btn-outline-dark btn-sm w-100 mb-2" data-bs-toggle="modal" data-bs-target="#modalQR{{ mesa.id }}">
-                            📲 Ver QR / URL
+                        <button class="btn btn-outline-dark btn-sm w-100 mb-2 fuente" data-bs-toggle="modal" data-bs-target="#modalQR{{ mesa.id }}">
+                            🔗 Ver QR y enlace directo
                         </button>
 
-                        <!-- Modal con QR y enlace -->
+                        <!-- Modal QR -->
                         <div class="modal fade" id="modalQR{{ mesa.id }}" tabindex="-1" aria-labelledby="modalQRLabel{{ mesa.id }}" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content rounded-4">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="modalQRLabel{{ mesa.id }}">🔗 QR - Mesa {{ mesa.numero_mesa }}</h5>
+                                        <h5 class="modal-title fuente" id="modalQRLabel{{ mesa.id }}">📲 Mesa {{ mesa.numero_mesa }}</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                                     </div>
-                                    <div class="modal-body text-center">
-                                        <p class="fw-semibold mb-2">Escanea o comparte esta URL:</p>
+                                    <div class="modal-body text-center fuente-2">
+                                        <p class="fw-semibold mb-2">Comparte o escanea este enlace:</p>
                                         <code class="small d-block mb-3 text-break">
-                                            {{ request.scheme }}://{{ request.get_host }}/restaurantes{% url 'pedido_rapido' slug=restaurante.slug numero_mesa=mesa.numero_mesa %}
+                                            {{ request.scheme }}://{{ request.get_host }}{% url 'pedido_rapido' slug=restaurante.slug numero_mesa=mesa.numero_mesa %}
                                         </code>
 
                                         <img src="{% url 'qr_mesa' slug=restaurante.slug numero_mesa=mesa.numero_mesa %}" alt="QR Mesa {{ mesa.numero_mesa }}" class="img-fluid rounded shadow-sm mb-3" style="max-width: 200px;">
 
                                         <div class="d-grid gap-2">
-                                            <a href="{{ request.scheme }}://{{ request.get_host }}{% url 'pedido_rapido' slug=restaurante.slug numero_mesa=mesa.numero_mesa %}" class="btn btn-primary btn-sm" target="_blank">
-                                                Ir a la URL
+                                            <a href="{{ request.scheme }}://{{ request.get_host }}{% url 'pedido_rapido' slug=restaurante.slug numero_mesa=mesa.numero_mesa %}" class="btn btn-primary btn-sm fuente-2" target="_blank">
+                                                🚀 Ir al enlace
                                             </a>
-                                            <a href="{% url 'qr_mesa' slug=restaurante.slug numero_mesa=mesa.numero_mesa %}" download="QR-Mesa{{ mesa.numero_mesa }}.png" class="btn btn-outline-secondary btn-sm">
+                                            <a href="{% url 'qr_mesa' slug=restaurante.slug numero_mesa=mesa.numero_mesa %}" download="QR-Mesa{{ mesa.numero_mesa }}.png" class="btn btn-outline-secondary btn-sm fuente-2">
                                                 📥 Descargar QR
                                             </a>
                                         </div>
@@ -57,11 +56,12 @@
                             </div>
                         </div>
 
-                        {% if pedidos_por_mesa.mesa.id %}
-                            <hr>
-                            <p><strong>Pedidos Activos:</strong></p>
-                            <ul class="list-unstyled">
-                                {% for p in pedidos_por_mesa.mesa.id %}
+                        <hr>
+
+                        {% if pedidos_por_mesa|get_item:mesa.id %}
+                            <p class="fw-semibold fuente">🧾 Pedidos activos:</p>
+                            <ul class="list-unstyled mb-0 fuente">
+                                {% for p in pedidos_por_mesa|get_item:mesa.id %}
                                     <li>
                                         <span class="badge bg-info text-dark">{{ p.tipo|capfirst }}</span>
                                         {{ p.cantidad }}x {{ p.platillo|default:p.bebida }}
@@ -69,8 +69,7 @@
                                 {% endfor %}
                             </ul>
                         {% else %}
-                            <hr>
-                            <p class="text-muted mb-0">Sin pedidos activos</p>
+                            <p class="text-muted mb-0 fuente">Sin pedidos registrados por ahora.</p>
                         {% endif %}
                     </div>
                 </div>

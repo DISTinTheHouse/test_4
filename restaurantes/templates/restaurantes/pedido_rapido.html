@@ -1,74 +1,91 @@
 {% extends 'base.html' %}
-
 {% block content %}
 <div class="container-fluid flex-grow-1 container-p-y">
     <div class="text-center mb-4">
-        <h1 class="display-6">{{ restaurante.nombre }}</h1>
-        <p class="lead text-muted">Mesa {{ mesa.numero_mesa }}</p>
-        <p class="text-success">Haz tu pedido aquí, sin registro y al instante 🍽️</p>
+        <h1 class="display-6 fuente-2">{{ restaurante.nombre }}</h1>
+        <p class="lead text-muted fuente">Mesa {{ mesa.numero_mesa }}</p>
+        <p class="text-success fuente">Haz tu pedido aquí, sin registro y al instante 🍽️</p>
+    </div>
+
+    <div class="accordion mb-4" id="menuAccordion">
+        <!-- Cocina -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingCocina">
+                <button class="accordion-button fuente" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCocina" aria-expanded="true" aria-controls="collapseCocina">
+                    🍳 Cocina
+                </button>
+            </h2>
+            <div id="collapseCocina" class="accordion-collapse collapse" aria-labelledby="headingCocina" data-bs-parent="#menuAccordion">
+                <div class="accordion-body">
+                    <div class="row">
+                        {% for platillo in platillos %}
+                        <div class="col-12 mb-3">
+                            <form method="POST" class="card p-3 shadow-sm rounded d-flex flex-row align-items-center fuente">
+                                {% csrf_token %}
+                                <img src="{{ platillo.imagen.url }}" alt="{{ platillo.nombre }}" class="me-3 rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                                <div style="flex:1">
+                                    <strong class="fuente">{{ platillo.nombre }}</strong>
+                                    <div class="text-muted small mb-1">{{ platillo.descripcion }}</div>
+                                    <div class="mb-2">
+                                        <span class="badge bg-success">${{ platillo.precio }}</span>
+                                    </div>
+                                    <input type="hidden" name="tipo" value="cocina">
+                                    <input type="hidden" name="platillo" value="{{ platillo.id }}">
+                                    <label class="small mb-1">Cantidad</label>
+                                    <input type="number" name="cantidad" class="form-control form-control-sm d-inline" value="1" min="1" style="width:80px;">
+                                </div>
+                                <button type="submit" class="btn btn-dark ms-3">Pedir</button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra -->
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingBarra">
+                <button class="accordion-button collapsed fuente" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBarra" aria-expanded="false" aria-controls="collapseBarra">
+                    🍹 Barra
+                </button>
+            </h2>
+            <div id="collapseBarra" class="accordion-collapse collapse" aria-labelledby="headingBarra" data-bs-parent="#menuAccordion">
+                <div class="accordion-body">
+                    <div class="row">
+                        {% for bebida in bebidas %}
+                        <div class="col-12 mb-3">
+                            <form method="POST" class="card p-3 shadow-sm rounded d-flex flex-row align-items-center fuente">
+                                {% csrf_token %}
+                                <img src="{{ bebida.imagen.url }}" alt="{{ bebida.nombre }}" class="me-3 rounded" style="width: 80px; height: 80px; object-fit: cover;">
+                                <div style="flex:1">
+                                    <strong class="fuente">{{ bebida.nombre }}</strong>
+                                    <div class="text-muted small mb-1">{{ bebida.descripcion }}</div>
+                                    <div class="mb-2">
+                                        <span class="badge bg-secondary">${{ bebida.precio }}</span>
+                                    </div>
+                                    <input type="hidden" name="tipo" value="barra">
+                                    <input type="hidden" name="bebida" value="{{ bebida.id }}">
+                                    <label class="small mb-1">Cantidad</label>
+                                    <input type="number" name="cantidad" class="form-control form-control-sm d-inline" value="1" min="1" style="width:80px;">
+                                </div>
+                                <button type="submit" class="btn btn-secondary ms-3">Pedir</button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row">
-        <!-- Platillos -->
-        <div class="col-md-6 mb-4">
-            <h4>🍳 Cocina</h4>
-            <div class="row">
-                {% for platillo in platillos %}
-                <div class="col-12 mb-3">
-                    <form method="POST" class="card p-3 shadow-sm rounded d-flex flex-row align-items-center">
-                        {% csrf_token %}
-                        <img src="{{ platillo.imagen.url }}" alt="{{ platillo.nombre }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 0.75rem; margin-right: 1rem;">
-                        <div style="flex:1">
-                            <strong>{{ platillo.nombre }}</strong>
-                            <div class="text-muted small mb-1">{{ platillo.descripcion }}</div>
-                            <div class="mb-2">
-                                <span class="badge bg-success">${{ platillo.precio }}</span>
-                            </div>
-                            <input type="hidden" name="tipo" value="cocina">
-                            <input type="hidden" name="platillo" value="{{ platillo.id }}">
-                            <label class="small mb-1">Cantidad</label>
-                            <input type="number" name="cantidad" class="form-control form-control-sm d-inline" value="1" min="1" style="width:80px;">
-                        </div>
-                        <button type="submit" class="btn btn-success ms-3">Pedir</button>
-                    </form>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- Bebidas -->
-        <div class="col-md-6 mb-4">
-            <h4>🍹 Barra</h4>
-            <div class="row">
-                {% for bebida in bebidas %}
-                <div class="col-12 mb-3">
-                    <form method="POST" class="card p-3 shadow-sm rounded d-flex flex-row align-items-center">
-                        {% csrf_token %}
-                        <img src="{{ bebida.imagen.url }}" alt="{{ bebida.nombre }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 0.75rem; margin-right: 1rem;">
-                        <div style="flex:1">
-                            <strong>{{ bebida.nombre }}</strong>
-                            <div class="text-muted small mb-1">{{ bebida.descripcion }}</div>
-                            <div class="mb-2">
-                                <span class="badge bg-primary">${{ bebida.precio }}</span>
-                            </div>
-                            <input type="hidden" name="tipo" value="barra">
-                            <input type="hidden" name="bebida" value="{{ bebida.id }}">
-                            <label class="small mb-1">Cantidad</label>
-                            <input type="number" name="cantidad" class="form-control form-control-sm d-inline" value="1" min="1" style="width:80px;">
-                        </div>
-                        <button type="submit" class="btn btn-primary ms-3">Pedir</button>
-                    </form>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-12">
-                <h5 class="mt-4">🧾 Pedidos en esta mesa</h5>
-                {% if pedidos %}
-                <table class="table table-sm table-striped mt-2" id="tabla-pedidos">
-                    <thead>
+        <div class="col-12">
+            <h5 class="mt-4 fuente">🧾 Pedidos en esta mesa</h5>
+            {% if pedidos %}
+            <div class="table-responsive">
+                <table class="table table-sm table-hover table-striped mt-2 fuente" id="tabla-pedidos">
+                    <thead class="table-dark">
                         <tr>
                             <th>Producto</th>
                             <th>Cantidad</th>
@@ -81,14 +98,12 @@
                         <tr>
                             <td>
                                 {% if pedido.platillo %}
-                                    {{ pedido.platillo.nombre }}
+                                  🍳 {{ pedido.platillo.nombre }}
                                 {% else %}
-                                    {{ pedido.bebida.nombre }}
+                                  🍹 {{ pedido.bebida.nombre }}
                                 {% endif %}
                             </td>
-                            <td class="cantidad">
-                                {{ pedido.cantidad }}
-                            </td>
+                            <td class="cantidad">{{ pedido.cantidad }}</td>
                             <td class="precio-unitario">
                                 {% if pedido.platillo %}
                                     {{ pedido.platillo.precio }}
@@ -96,42 +111,40 @@
                                     {{ pedido.bebida.precio }}
                                 {% endif %}
                             </td>
-                            <td class="subtotal">
-                                <!-- El subtotal se llenará con JS -->
-                            </td>
+                            <td class="subtotal"></td>
                         </tr>
                         {% endfor %}
                     </tbody>
-                    <tfoot>
+                    <tfoot class="table-dark">
                         <tr>
-                            <th colspan="3" class="text-end">Total a pagar:</th>
-                            <th id="total-a-pagar"></th>
+                            <th colspan="3" class="text-end fw-bold">Total a pagar:</th>
+                            <th class="fw-bold" id="total-a-pagar"></th>
                         </tr>
                     </tfoot>
                 </table>
-                {% else %}
-                <div class="alert alert-info mt-3">No hay pedidos en esta mesa aún.</div>
-                {% endif %}
             </div>
+            {% else %}
+            <div class="alert alert-info mt-3 fuente-2">No hay pedidos en esta mesa aún.</div>
+            {% endif %}
         </div>
-
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let total = 0;
-            document.querySelectorAll('#tabla-pedidos tbody tr').forEach(function(row) {
-                const cantidad = parseFloat(row.querySelector('.cantidad').textContent.trim());
-                const precio = parseFloat(row.querySelector('.precio-unitario').textContent.trim());
-                const subtotal = cantidad * precio;
-                row.querySelector('.subtotal').textContent = '$' + subtotal.toFixed(2);
-                total += subtotal;
-            });
-            const totalCell = document.getElementById('total-a-pagar');
-            if (totalCell) {
-                totalCell.textContent = '$' + total.toFixed(2);
-            }
-        });
-        </script>
-
     </div>
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let total = 0;
+        document.querySelectorAll('#tabla-pedidos tbody tr').forEach(function(row) {
+            const cantidad = parseFloat(row.querySelector('.cantidad').textContent.trim());
+            const precio = parseFloat(row.querySelector('.precio-unitario').textContent.trim());
+            const subtotal = cantidad * precio;
+            row.querySelector('.subtotal').textContent = '$' + subtotal.toFixed(2);
+            total += subtotal;
+        });
+        const totalCell = document.getElementById('total-a-pagar');
+        if (totalCell) {
+            totalCell.textContent = '$' + total.toFixed(2);
+        }
+    });
+    </script>
 </div>
 {% endblock %}

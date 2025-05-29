@@ -35,8 +35,8 @@
                 {% with conteo=conteo_mesas|get_item:r.id %}
                 <div class="col-md-6">
                     <div class="card shadow rounded-5 border-0">
-                        <div class="card-header bg-light d-flex justify-content-between align-items-center rounded-top-5">
-                            <h5 class="mb-0 fuente">🍽️ {{ r.nombre }}</h5>
+                        <div class="card-header bg-dark d-flex justify-content-between align-items-center rounded-top-5">
+                            <h5 class="mb-0 fuente text-white">🍽️ {{ r.nombre }}</h5>
                             <span class="badge bg-secondary">ID: {{ r.id }}</span>
                         </div>
                         <div class="card-body text-center">
@@ -59,12 +59,12 @@
                             {% endif %}
 
                             <div class="mt-3 d-flex gap-2">
-                                <a href="{% url 'configurar_restaurante' slug=r.slug %}" class="btn btn-outline-dark btn-sm w-50">⚙️ Configurar</a>
+                                <a href="{% url 'configurar_restaurante' slug=r.slug %}" class="btn btn-secondary btn-sm w-50">⚙️ Configurar</a>
                                 <a href="{% url 'mesas_restaurante' restaurante_id=r.id %}" class="btn btn-primary btn-sm w-50">🪑 Ver Mesas</a>
                             </div>
 
                             <div class="mt-3">
-                                <a href="{% url 'dashboard' slug=r.slug %}" class="btn btn-outline-primary btn-sm w-100 mt-2">📊 Ver Panel de Secciones</a>
+                                <a href="{% url 'dashboard' slug=r.slug %}" class="btn btn-warning btn-sm w-100 mt-2">📊 Ver Panel de Secciones</a>
                             </div>
                         </div>
                     </div>

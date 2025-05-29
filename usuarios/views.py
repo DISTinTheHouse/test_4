@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.utils.timezone import now
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.models import User
 from .models import PerfilUsuario
@@ -65,26 +66,39 @@ def registro(request):
 
 
 def perfil(request):
+    fecha_pago = None
+    fecha_expiracion = None
+
     if request.user.is_authenticated:
         perfil_usuario = request.user.perfil
+        fecha_expiracion = perfil_usuario.fecha_expiracion
+        fecha_pago = perfil_usuario.fecha_pago
 
+        # Validar expiración automática
+        if perfil_usuario.es_socio and fecha_expiracion and now() > fecha_expiracion:
+            perfil_usuario.es_socio = False
+            perfil_usuario.save()
+            messages.warning(request, '⚠️ Tu membresía ha expirado. Puedes renovarla para seguir gestionando restaurantes.')
+
+        # Validar nuevo pago
         pago_exitoso = request.GET.get('pago')
-
         if pago_exitoso == 'exitoso':
-            if not perfil_usuario.es_socio:
-                perfil_usuario.es_socio = True
-                perfil_usuario.cantidad_restaurantes = 1  
-                perfil_usuario.fecha_pago = timezone.now()
-                perfil_usuario.fecha_expiracion = timezone.now() + timedelta(days=30)  # +30 días
-                perfil_usuario.save()
-                messages.success(request, '🎉 ¡Pago recibido! Tu membresía está activa.')
+            perfil_usuario.es_socio = True
+            perfil_usuario.cantidad_restaurantes = 1
+            perfil_usuario.fecha_pago = now()
+            perfil_usuario.fecha_expiracion = now() + timedelta(days=1)
+            perfil_usuario.save()
+            messages.success(request, '🎉 ¡Pago recibido! Tu membresía está activa.')
 
         elif pago_exitoso == 'cancelado':
             messages.warning(request, '⚠️ El pago fue cancelado. Puedes intentarlo de nuevo.')
 
     return render(request, 'usuarios/perfil.html', {
-        'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLIC_KEY
+        'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLIC_KEY,
+        'fecha_expiracion': fecha_expiracion,
+        'fecha_pago': fecha_pago
     })
+
 
 
 @csrf_exempt
