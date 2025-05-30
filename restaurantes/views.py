@@ -10,10 +10,13 @@ import requests
 import stripe
 from django.conf import settings
 stripe.api_key = settings.STRIPE_SECRET_KEY
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from io import BytesIO
+import datetime
 
 #QR DE MESAS
 import qrcode
-from io import BytesIO
 from django.http import HttpResponse
 
 @login_required
@@ -380,6 +383,87 @@ def pedido_rapido(request, slug, numero_mesa):
         'pedidos': pedidos,
         'total_a_pagar': total_a_pagar,
     })
+
+def generar_ticket_pdf(request, slug, numero_mesa):
+    restaurante = get_object_or_404(Restaurante, slug=slug)
+    mesa = get_object_or_404(restaurante.mesas, numero_mesa=numero_mesa)
+    pedidos = Pedido.objects.filter(restaurante=restaurante, mesa=mesa).order_by('id')
+
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    y = 750
+
+    # Logo (ajustado)
+    logo_path = settings.BASE_DIR / 'static' / 'img' / 'sin-mesero-pdf.png'
+    try:
+        y = 680
+        p.drawImage(str(logo_path), 216, y, width=180, height=70, preserveAspectRatio=True, mask='auto')
+        y -= 90
+    except:
+        p.setFont("Helvetica-Bold", 14)
+        p.drawCentredString(300, y, "SIN MESERO")
+        y -= 30
+
+    # Encabezado
+    p.setFont("Helvetica-Bold", 13)
+    p.drawString(50, y, f"Restaurante: {restaurante.nombre}")
+    y -= 20
+    p.drawString(50, y, f"Mesa: {mesa.numero_mesa}")
+    y -= 20
+    p.setFont("Helvetica", 10)
+    p.drawString(50, y, f"Fecha: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    y -= 30
+
+    # Detalle de pedido
+    p.setFont("Helvetica-Bold", 11)
+    p.drawString(50, y, "Detalle del pedido:")
+    y -= 20
+
+    total = 0
+    p.setFont("Helvetica", 10)
+    for pedido in pedidos:
+        nombre = pedido.platillo.nombre if pedido.platillo else pedido.bebida.nombre
+        precio = pedido.platillo.precio if pedido.platillo else pedido.bebida.precio
+        subtotal = pedido.cantidad * precio
+        estado = pedido.estado
+        total += subtotal
+
+        p.drawString(50, y, f"{pedido.cantidad} x {nombre} - ${precio:.2f} [{estado}]")
+        y -= 15
+        if y < 100:
+            p.showPage()
+            y = 750
+
+    # Total
+    y -= 10
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(50, y, f"TOTAL: ${total:.2f}")
+    y -= 30
+
+    # Footer legal / demo
+    p.setFont("Helvetica", 9)
+    clausulas = [
+        "Este ticket es un comprobante generado por el sistema SIN MESERO.",
+        "SIN MESERO® es software registrado. Todos los derechos reservados.",
+        "Este documento no sustituye una factura oficial.",
+        "Si requiere factura, por favor solicítela en caja o con su mesero.",
+        "Distribución, copia o reproducción no autorizada será perseguida legalmente.",
+        "https://sinmesero.com | contacto@sinmesero.com"
+    ]
+    for linea in clausulas:
+        p.drawString(50, y, linea)
+        y -= 12
+        if y < 60:
+            p.showPage()
+            y = 750
+
+    p.showPage()
+    p.save()
+    buffer.seek(0)
+
+    return HttpResponse(buffer, content_type='application/pdf')
+
+
 
 
 def cambiar_estado_pedido(request, slug, area, pedido_id):

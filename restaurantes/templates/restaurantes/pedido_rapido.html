@@ -99,16 +99,27 @@
         </div>
     </div>
 
+    <hr>
+
     <style>
-        #tabla-pedidos td, #tabla-pedidos th {
-    font-size: 0.75rem; /* más chico que fs-6 */
-    padding: 4px 6px;
+    #tabla-pedidos td, #tabla-pedidos th {
+        font-size: 0.75rem; /* más chico que fs-6 */
+        padding: 4px 6px;
+    }
+    .modal-content {
+        border: none;
+    }
+    .modal-header {
+        border-bottom: none;
+    }
+    .modal-footer {
+        border-top: none;
     }
     </style>
 
     <div class="row">
         <div class="col-12">
-            <h5 class="mt-4 fuente">🧾 Pedidos en esta mesa</h5>
+            <h5 class="fuente">🧾 Pedidos en esta mesa:</h5>
             <ul class="nav nav-pills mb-3" id="filtro-tabla" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" data-estado="todos">Todos</button>
@@ -122,7 +133,7 @@
             </ul>
             {% if pedidos %}
             <div class="table-responsive">
-                <table class="table table-sm table-hover table-striped mt-2 fuente" id="tabla-pedidos">
+                <table class="table table-sm table-hover table-striped mt-2 fuente table-primary" id="tabla-pedidos">
                     <thead class="table-dark">
                         <tr>
                             <th>Estatus</th>
@@ -173,6 +184,44 @@
                     </tfoot>
                 </table>
             </div>
+
+            <div class="d-grid">
+            <button class="btn btn-danger btn-lg mt-3" data-bs-toggle="modal" data-bs-target="#modalPago">
+                Solicitar cuenta 🧾
+            </button>
+            </div>
+            <div class="modal fade" id="modalPago" tabindex="-1" aria-labelledby="modalPagoLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <form method="POST" action="#">
+                <!-- {% csrf_token %} -->
+                <div class="modal-content shadow-lg rounded-4">
+                    <div class="modal-header text-white rounded-top-4">
+                    <h5 class="modal-title fuente" id="modalPagoLabel">¿Cómo desea pagar?</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    
+                    <div class="modal-body text-center">
+                    <select name="metodo_pago" class="form-select form-select-lg mb-3">
+                        <option value="efectivo">💵 Efectivo</option>
+                        <option value="tarjeta">💳 Tarjeta</option>
+                        <option value="ambos">💵 + 💳 Ambos</option>
+                    </select>
+                    </div>
+
+                    <div class="modal-footer d-flex flex-column gap-2">
+                    <button type="submit" class="btn btn-warning w-100 fw-bold">
+                        Confirmar solicitud de cuenta
+                    </button>
+                    <a href="{% url 'generar_ticket_pdf' restaurante.slug mesa.numero_mesa %}" class="btn btn-outline-warning w-100 fw-semibold" target="_blank">
+                        Ver cuenta en PDF 🧾
+                    </a>
+                    </div>
+                </div>
+                </form>
+            </div>
+            </div>
+
+
             {% else %}
             <div class="alert alert-info mt-3 fuente-2">No hay pedidos en esta mesa aún.</div>
             {% endif %}
@@ -258,7 +307,6 @@
         });
     });
     </script>
-
 
 </div>
 {% endblock %}

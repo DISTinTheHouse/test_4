@@ -26,4 +26,6 @@ urlpatterns = [
     # Barra
     path('dashboard/<slug:slug>/barra/', views.dashboard_pedidos_barra, name='dashboard_pedidos_barra'),
     path('dashboard/<slug:slug>/barra/cambiar_estado/<int:pedido_id>/', views.cambiar_estado_pedido_barra, name='cambiar_estado_pedido_barra'),
+    # ticket pdf
+    path('<slug:slug>/mesa/<int:numero_mesa>/ticket/', views.generar_ticket_pdf, name='generar_ticket_pdf'),
 ]
