@@ -7,6 +7,26 @@
         <p class="text-success fuente">Haz tu pedido aquí, sin registro y al instante 🍽️</p>
     </div>
 
+    <!-- Modal de confirmación -->
+    <div class="modal fade" id="confirmarPedidoModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title fuente" id="modalLabel">¡Confirmar pedido!</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body fuente">
+            <p id="detallePedido"></p>
+            <p class="text-muted" id="estadoPedidoSimulado"></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" id="confirmarBtn">Confirmar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="accordion mb-4" id="menuAccordion">
         <!-- Cocina -->
         <div class="accordion-item">
@@ -79,14 +99,33 @@
         </div>
     </div>
 
+    <style>
+        #tabla-pedidos td, #tabla-pedidos th {
+    font-size: 0.75rem; /* más chico que fs-6 */
+    padding: 4px 6px;
+    }
+    </style>
+
     <div class="row">
         <div class="col-12">
             <h5 class="mt-4 fuente">🧾 Pedidos en esta mesa</h5>
+            <ul class="nav nav-pills mb-3" id="filtro-tabla" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" data-estado="todos">Todos</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-estado="pendiente">Pendientes</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-estado="completado">Completados</button>
+                </li>
+            </ul>
             {% if pedidos %}
             <div class="table-responsive">
                 <table class="table table-sm table-hover table-striped mt-2 fuente" id="tabla-pedidos">
                     <thead class="table-dark">
                         <tr>
+                            <th>Estatus</th>
                             <th>Producto</th>
                             <th>Cantidad</th>
                             <th>Precio unitario</th>
@@ -96,6 +135,17 @@
                     <tbody>
                         {% for pedido in pedidos %}
                         <tr>
+                            <td>
+                            {% if pedido.estado == 'pendiente' %}
+                                <span class="badge bg-warning text-dark">Pendiente</span>
+                            {% elif pedido.estado == 'en_proceso' %}
+                                <span class="badge bg-info text-dark">En preparación</span>
+                            {% elif pedido.estado == 'completado' %}
+                                <span class="badge bg-success">Completado</span>
+                            {% else %}
+                                <span class="badge bg-success">Completado</span>
+                            {% endif %}
+                            </td>
                             <td>
                                 {% if pedido.platillo %}
                                   🍳 {{ pedido.platillo.nombre }}
@@ -129,11 +179,11 @@
         </div>
     </div>
 
-
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
+        // Calcular totales
         let total = 0;
-        document.querySelectorAll('#tabla-pedidos tbody tr').forEach(function(row) {
+        document.querySelectorAll('#tabla-pedidos tbody tr').forEach(function (row) {
             const cantidad = parseFloat(row.querySelector('.cantidad').textContent.trim());
             const precio = parseFloat(row.querySelector('.precio-unitario').textContent.trim());
             const subtotal = cantidad * precio;
@@ -144,7 +194,71 @@
         if (totalCell) {
             totalCell.textContent = '$' + total.toFixed(2);
         }
+
+        // Interceptar formularios
+        document.querySelectorAll('form').forEach(function (form) {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const nombre = form.querySelector('strong').textContent;
+                const cantidad = parseInt(form.querySelector('input[name="cantidad"]').value);
+                const tipo = form.querySelector('input[name="tipo"]').value;
+                const precioTexto = form.querySelector('span.badge').textContent.replace('$', '');
+                const precioUnitario = parseFloat(precioTexto);
+                const total = (precioUnitario * cantidad).toFixed(2);
+
+                // Mostrar modal
+                const modal = new bootstrap.Modal(document.getElementById('confirmarPedidoModal'));
+                document.getElementById('detallePedido').textContent =
+                    `¿Deseas pedir ${cantidad} ${nombre} (${tipo}) por un total de $${total}?`;
+                modal.show();
+
+                // Confirmación real
+                document.getElementById('confirmarBtn').onclick = async function () {
+                    modal.hide();
+                    const formData = new FormData(form);
+                    try {
+                        const response = await fetch(form.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+
+                        if (response.ok) {
+                            location.reload(); // Pedido reflejado en chinga
+                        } else {
+                            alert("Error al enviar el pedido.");
+                        }
+                    } catch (error) {
+                        console.error("Error:", error);
+                        alert("No se pudo enviar el pedido.");
+                    }
+                };
+            });
+        });
+    });
+    document.querySelectorAll('#filtro-tabla .nav-link').forEach(btn => {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('#filtro-tabla .nav-link').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const estado = btn.getAttribute('data-estado');
+
+            document.querySelectorAll('#tabla-pedidos tbody tr').forEach(row => {
+                const badge = row.querySelector('td span.badge');
+                const texto = badge?.textContent?.toLowerCase();
+
+                if (estado === 'todos' || texto.includes(estado)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
     });
     </script>
+
+
 </div>
 {% endblock %}

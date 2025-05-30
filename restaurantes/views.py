@@ -363,7 +363,7 @@ def pedido_rapido(request, slug, numero_mesa):
     pedidos = Pedido.objects.filter(
         restaurante=restaurante,
         mesa=mesa,
-        estado='pendiente'
+        estado__in=['completado', 'pendiente', 'en_proceso', 'completado']
     ).order_by('-id')
 
     # Calcula el total
