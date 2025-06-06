@@ -41,12 +41,7 @@
   <ul id="mensajes"></ul>
 
   <script>
-    const socket = new WebSocket(
-  (window.location.protocol === "https:" ? "wss://" : "ws://") +
-  window.location.host +
-  "/ws/pedidos/"
-);
-
+    const socket = new WebSocket("ws://test-4-c47v.onrender.com/ws/pedidos/");
 
     socket.onopen = () => {
       console.log("✅ Conectado al WebSocket");
