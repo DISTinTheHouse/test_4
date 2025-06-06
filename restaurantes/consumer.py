@@ -3,6 +3,7 @@ import json
 
 class PedidoConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        print("✅ Conectando WebSocket...")
         await self.channel_layer.group_add("pedidos", self.channel_name)
         await self.accept()
 
