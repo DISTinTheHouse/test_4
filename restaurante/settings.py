@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'usuarios',
     'restaurantes',
+    'channels'
 ]
 
 # ⚙️ Middleware
@@ -66,7 +67,10 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = 'restaurante.asgi.application'
+
 WSGI_APPLICATION = 'restaurante.wsgi.application'
+
 
 # 🗄️ Base de datos
 DATABASES = {

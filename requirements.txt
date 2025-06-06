@@ -1,5 +1,6 @@
 asgiref==3.8.1
 certifi==2025.4.26
+channels==4.2.2
 chardet==5.2.0
 charset-normalizer==3.4.1
 colorama==0.4.6
