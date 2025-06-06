@@ -73,23 +73,16 @@ WSGI_APPLICATION = 'restaurante.wsgi.application'
 
 import os
 
-if os.getenv("RENDER", None):  # Render define esta variable en su entorno
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels_redis.core.RedisChannelLayer",
-            "CONFIG": {
-                "hosts": [
-                    "redis://default:Eu7ISAIae1LLSIUaXJwR6JMBZH2RBFFz@redis-15794.c253.us-central1-1.gce.redns.redis-cloud.com:15794"
-                ],
-            },
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [
+                "redis://default:Eu7ISAIae1LLSIUaXJwR6JMBZH2RBFFz@redis-15794.c253.us-central1-1.gce.redns.redis-cloud.com:15794"
+            ],
         },
-    }
-else:
-    CHANNEL_LAYERS = {
-        "default": {
-            "BACKEND": "channels.layers.InMemoryChannelLayer",
-        },
-    }
+    },
+}
 
 
 
