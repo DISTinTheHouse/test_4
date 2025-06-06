@@ -71,6 +71,25 @@ ASGI_APPLICATION = 'restaurante.asgi.application'
 
 WSGI_APPLICATION = 'restaurante.wsgi.application'
 
+import os
+
+if os.getenv("RENDER", None):  # Render define esta variable en su entorno
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [os.environ.get("REDIS_URL")],  # Render lo define automáticamente si usas su addon
+            },
+        },
+    }
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        },
+    }
+
+
 
 # 🗄️ Base de datos
 DATABASES = {

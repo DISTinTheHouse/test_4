@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>📡 WebSocket Pedidos</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: #f8f8f8;
+      padding: 2rem;
+    }
+    h1 {
+      color: #00ffcc;
+    }
+    input, button {
+      font-size: 1.2rem;
+      padding: 0.5rem;
+      margin-right: 0.5rem;
+    }
+    ul {
+      margin-top: 1rem;
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      background: #222;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      border-left: 4px solid #00ffcc;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🚀 Test de Pedidos en Tiempo Real</h1>
+
+  <input id="pedido" placeholder="Ej: 3x Pedidos">
+  <button onclick="sendPedido()">Enviar Pedido</button>
+
+  <ul id="mensajes"></ul>
+
+  <script>
+    const socket = new WebSocket(
+    (window.location.protocol === "https:" ? "wss://" : "ws://") +
+    window.location.host +
+    "/ws/pedidos/"
+    );
+
+    socket.onopen = () => {
+      console.log("✅ Conectado al WebSocket");
+    };
+
+    socket.onmessage = function(e) {
+      const data = JSON.parse(e.data);
+      const item = document.createElement("li");
+      item.innerText = "📦 Pedido recibido: " + data.pedido;
+      document.getElementById("mensajes").appendChild(item);
+    };
+
+    socket.onclose = () => {
+      console.log("❌ WebSocket cerrado");
+    };
+
+    socket.onerror = (error) => {
+      console.error("🚨 WebSocket error:", error);
+    };
+
+    function sendPedido() {
+      const input = document.getElementById("pedido");
+      const valor = input.value.trim();
+      if (valor !== "") {
+        socket.send(JSON.stringify({ pedido: valor }));
+        input.value = "";
+      }
+    }
+  </script>
+</body>
+</html>

@@ -19,6 +19,9 @@ import datetime
 import qrcode
 from django.http import HttpResponse
 
+def ws_test(request):
+    return render(request, 'restaurantes/ws_test.html')
+
 @login_required
 def qr_mesa(request, slug, numero_mesa):
     url = f"{request.scheme}://{request.get_host()}/restaurantes/r/{slug}/mesa/{numero_mesa}/"
@@ -573,3 +576,4 @@ def cambiar_estado_pedido_barra(request, slug, pedido_id):
     pedido.save()
     messages.success(request, f"Pedido {pedido.id} actualizado a {pedido.estado}")
     return redirect('dashboard_pedidos_barra', slug=slug)
+
