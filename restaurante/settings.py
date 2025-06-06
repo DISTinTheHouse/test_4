@@ -67,23 +67,30 @@ TEMPLATES = [
     },
 ]
 
-ASGI_APPLICATION = 'restaurante.asgi.application'
-
-WSGI_APPLICATION = 'restaurante.wsgi.application'
 
 import os
+ASGI_APPLICATION = 'restaurante.asgi.application'
+WSGI_APPLICATION = 'restaurante.wsgi.application'
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [
-                "redis://default:Eu7ISAIae1LLSIUaXJwR6JMBZH2RBFFz@redis-15794.c253.us-central1-1.gce.redns.redis-cloud.com:15794"
-            ],
+if os.getenv("RENDER"):
+    # 👉 En producción (Render)
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [
+                    "redis://default:Eu7ISAIae1LLSIUaXJwR6JMBZH2RBFFz@redis-15794.c253.us-central1-1.gce.redns.redis-cloud.com:15794"
+                ],
+            },
         },
-    },
-}
-
+    }
+else:
+    # 👉 En local (sin Redis)
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        },
+    }
 
 
 # 🗄️ Base de datos

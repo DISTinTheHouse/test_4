@@ -43,10 +43,10 @@
   <script>
     // const socket = new WebSocket("ws://127.0.0.1:8001/ws/pedidos/");
     const socket = new WebSocket(
-    (window.location.protocol === "https:" ? "wss://" : "ws://") +
-    window.location.host +
-    "/ws/pedidos/"
-  );
+        (window.location.protocol === "https:" ? "wss://" : "ws://") +
+        window.location.host +
+        "/ws/pedidos/"
+    );
 
     socket.onopen = () => {
       console.log("✅ Conectado al WebSocket");
